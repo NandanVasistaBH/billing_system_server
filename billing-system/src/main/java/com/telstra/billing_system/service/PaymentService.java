@@ -48,7 +48,7 @@ public class PaymentService {
         }
 
         payment.setStatus(status);
-        payment.setTransactionId(transactionId);
+        payment.setPayId(transactionId);
         payment.setLastUpdate(LocalDateTime.now());
 
         return paymentRepository.save(payment);

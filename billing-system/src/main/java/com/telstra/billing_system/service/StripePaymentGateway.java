@@ -7,6 +7,7 @@ import com.telstra.billing_system.model.Payment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +22,8 @@ public class StripePaymentGateway {
 
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put("amount", payment.getAmountPaid().multiply(new BigDecimal(100)).intValue()); // Convert to cents
-        chargeParams.put("currency", payment.getCurrency());
-        chargeParams.put("source", payment.getTransactionId());
+        chargeParams.put("currency", payment.getAmountPaid());
+        chargeParams.put("source", payment.getPayId());
 
         try {
             Charge charge = Charge.create(chargeParams);

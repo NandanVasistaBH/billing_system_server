@@ -26,7 +26,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pay_id")
-    private Integer payId;
+    private String payId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_gateway", nullable = false)
@@ -58,11 +58,11 @@ public class Payment {
         PENDING, COMPLETED, FAILED, REFUNDED, CANCELLED
     }
 
-    public Integer getPayId() {
+    public String getPayId() {
         return payId;
     }
 
-    public void setPayId(Integer payId) {
+    public void setPayId(String payId) {
         this.payId = payId;
     }
 
@@ -96,22 +96,6 @@ public class Payment {
 
     public void setStatus(PaymentStatus status) {
         this.status = status;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
     }
 
     public LocalDateTime getLastUpdate() {
