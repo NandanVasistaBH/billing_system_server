@@ -16,7 +16,7 @@ pipeline {
         stage('List Files') {
             steps {
                 bat "dir"
-                bat "cd ./billing-system"
+                bat "cd billing-system"
                 bat "dir"
             }
         }
