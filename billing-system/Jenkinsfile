@@ -16,7 +16,8 @@ pipeline {
         stage('List Files') {
             steps {
                 bat "dir"
-                cd "./billing-system"
+                bat "cd ./billing-system"
+                bat "dir"
             }
         }
         stage("Maven") {
