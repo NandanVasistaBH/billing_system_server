@@ -13,17 +13,12 @@ pipeline {
                 ])
             }
         }
-        stage('List Files') {
+        stage("Maven") {
             steps {
-                bat "dir"
                 bat '''
                 cd billing-system
                 dir
                 '''
-            }
-        }
-        stage("Maven") {
-            steps {
                 bat "mvn install"
             }
         }
