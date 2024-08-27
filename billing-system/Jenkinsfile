@@ -18,8 +18,8 @@ pipeline {
                 bat '''
                 cd billing-system
                 dir
+                mvn install
                 '''
-                bat "mvn install"
             }
         }
         stage("Pull an image to check if docker exists"){
