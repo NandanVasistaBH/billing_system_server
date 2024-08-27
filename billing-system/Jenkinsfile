@@ -37,7 +37,7 @@ pipeline {
                     catch(Exception e){
                         echo "Exception occurred "+e.toString()
                     }
-                    bat "docker build -t billing-system ."
+                    bat "cd billing-system && docker build -t billing-system ."
                 }
             }
         }
