@@ -37,7 +37,7 @@ public class Invoice {
     private Subscription subscription;
 
     @ManyToOne
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "pay_id")
     private Payment payment;
 
     @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)

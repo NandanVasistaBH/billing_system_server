@@ -35,6 +35,7 @@ public class PaymentController {
 
     @GetMapping("/{payId}")
     public ResponseEntity<Payment> getPayment(@PathVariable String payId) {
+        System.out.println("hiuuuuuu");
         return ResponseEntity.ok(paymentService.getPayment(payId));
     }
 

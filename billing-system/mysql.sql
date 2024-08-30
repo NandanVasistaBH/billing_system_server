@@ -35,7 +35,7 @@ CREATE TABLE Subscription (
 -- Create the Payment table
 CREATE TABLE Payment (
     pay_id INT AUTO_INCREMENT PRIMARY KEY,
-    payment_gateway ENUM('Credit Card', 'Debit Card', 'PayPal', 'Bank Transfer') NOT NULL,
+    payment_gateway ENUM('CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL', 'BANK_TRANSFER','STRIPE') NOT NULL,
     type VARCHAR(50) NOT NULL,
     amount_paid DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE Invoice (
     cust_id INT,
     branch_id INT,
     subscription_id INT,
-    payment_id INT,
+    pay_id INT,
     amount_paid DECIMAL(10, 2) NOT NULL,
     amount_due DECIMAL(10, 2) NOT NULL,
     tax DECIMAL(10, 2) NOT NULL,
@@ -58,5 +58,5 @@ CREATE TABLE Invoice (
     FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
     FOREIGN KEY (branch_id) REFERENCES Supplier(branch_id),
     FOREIGN KEY (subscription_id) REFERENCES Subscription(subscription_id),
-    FOREIGN KEY (payment_id) REFERENCES Payment(pay_id)
+    FOREIGN KEY (pay_id) REFERENCES Payment(pay_id)
 );
