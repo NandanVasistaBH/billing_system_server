@@ -1,6 +1,5 @@
 package com.telstra.billing_system.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -12,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -25,101 +26,46 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pay_id")
-    private String payId;
+    @Column(name = "payment_id")
+    private Integer paymentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_gateway", nullable = false)
     private PaymentGateway paymentGateway;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "amount_paid", nullable = false)
+    private Double amountPaid;
 
-    @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)
-    private BigDecimal amountPaid;
-
+    
     @Column(name = "status", nullable = false)
-    private PaymentStatus status;
+    private String status;
 
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate;
-
+    private LocalDate transactionDate = LocalDate.now();
+    
     @OneToMany(mappedBy = "payment")
     private Set<Invoice> invoices;
+
+    @ManyToOne
+    @JoinColumn(name = "cust_id")
+    private Customer customer;
+
+    @Column(name = "razorpayid")
+    private String razorpayid;
     
+    public enum PaymentMethod {
+        CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER , UPI
+    }
+
     public enum PaymentGateway {
-        CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER
-    }
-
-    public enum PaymentStatus {
-        PENDING, COMPLETED, FAILED, REFUNDED, CANCELLED
-    }
-
-    public String getPayId() {
-        return payId;
-    }
-
-    public void setPayId(String payId) {
-        this.payId = payId;
-    }
-
-    public PaymentGateway getPaymentGateway() {
-        return paymentGateway;
-    }
-
-    public void setPaymentGateway(PaymentGateway paymentGateway) {
-        this.paymentGateway = paymentGateway;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
-    }
-
-    public void setAmountPaid(BigDecimal amountPaid) {
-        this.amountPaid = amountPaid;
-    }
-
-    public PaymentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PaymentStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(LocalDateTime lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
-    public Set<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public void setInvoices(Set<Invoice> invoices) {
-        this.invoices = invoices;
+        RAZOR_PAY
     }
 
 }

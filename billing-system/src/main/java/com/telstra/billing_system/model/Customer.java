@@ -24,7 +24,7 @@ public class Customer {
     @Column(name = "cust_id")
     private Integer custId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "cust_name", nullable = false)
     private String name;
 
     @Column(name = "cust_email", nullable = false, unique = true)
@@ -42,4 +42,6 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer")
     private Set<Invoice> invoices;
+
+    
 }

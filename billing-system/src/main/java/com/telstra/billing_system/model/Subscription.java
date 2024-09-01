@@ -24,8 +24,8 @@ public class Subscription {
     @Column(name = "subscription_id")
     private Integer subscriptionId;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "subscription_type", nullable = false)
+    private String subscriptionType;
 
     @Column(name = "service_days", nullable = false)
     private Integer serviceDays;
