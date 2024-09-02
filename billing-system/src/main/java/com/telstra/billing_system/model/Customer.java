@@ -42,4 +42,17 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer")
     private Set<Invoice> invoices;
+
+    public String getName(){
+        return this.name;
+    }
+    public String getCustPassword(){
+        return this.custPassword;
+    }
+    public void setName(String name){
+         this.name=name;
+    }
+    public void setCustPassword(String custPassword){
+        this.custPassword=custPassword;
+    }
 }
