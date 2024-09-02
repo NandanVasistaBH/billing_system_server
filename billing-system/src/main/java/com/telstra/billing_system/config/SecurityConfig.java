@@ -33,7 +33,7 @@ public class SecurityConfig {
         // diable csrf
         http.csrf(customizer->customizer.disable());
         http.authorizeHttpRequests(request->request
-                                                    .requestMatchers("/customer-register","/customer-login")
+                                                    .requestMatchers("/customer-register","/customer-login","/admin-login")
                                                     .permitAll().
                                                     anyRequest().
                                                     authenticated()); // all req has to be authenticated except login and register
