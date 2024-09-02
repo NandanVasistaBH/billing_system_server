@@ -1,5 +1,6 @@
 package com.telstra.billing_system.service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,6 +11,7 @@ import com.telstra.billing_system.model.CustomerPrincipal;
 import com.telstra.billing_system.repository.CustomerRepo;
 
 @Service
+@Qualifier("myCustomerDetailsService")
 public class MyCustomerDetailsService implements UserDetailsService {
     @Autowired
     private CustomerRepo customerRepo;

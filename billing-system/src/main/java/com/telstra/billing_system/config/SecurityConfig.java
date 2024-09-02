@@ -2,6 +2,7 @@ package com.telstra.billing_system.config;
 
 import com.telstra.billing_system.filters.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired(required = true)
+    @Qualifier("myCustomerDetailsService") 
     private UserDetailsService userDetailsService;
     @Autowired
     private JwtFilter jwtFilter;
