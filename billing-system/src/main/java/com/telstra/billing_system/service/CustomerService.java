@@ -28,12 +28,19 @@ public class CustomerService {
     }  
     
     public String verify(Customer customer) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(customer.getName(), customer.getCustPassword())
-        );
-        if( authentication.isAuthenticated()){
-            return jwtService.generateToken(customer.getName());
+        System.out.println("verify service");
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(customer.getName(), customer.getCustPassword())
+            );
+            System.out.println("auth");
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(customer.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
         }
         return "failure";
-    }  
+    }
+    
 }

@@ -12,7 +12,7 @@ public class AdminController {
     @Autowired
     private AdminService service;
     
-    @PostMapping("/admin-login")
+    @PostMapping("/admin/login")
     public ResponseEntity<String> login(@RequestBody Admin admin){
         if(admin==null || admin.getName()==null || admin.getPassword()==null){
             return new ResponseEntity<>("need to provide both name and password",HttpStatus.BAD_GATEWAY);

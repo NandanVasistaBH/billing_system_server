@@ -12,21 +12,21 @@ import com.telstra.billing_system.service.CustomerService;
 public class CustomerController {
     @Autowired
     private CustomerService service;
-    @PostMapping("/customer-register")
+    @PostMapping("/customer/register")
     public ResponseEntity<String>  register(@RequestBody Customer customer){
         if(customer==null || customer.getName()==null || customer.getCustPassword()==null || customer.getCustEmail()==null || customer.getCustPhoneNo()==null){
             return new ResponseEntity<>("need to provide both name,password,phone and email",HttpStatus.BAD_GATEWAY);
         }
         return new ResponseEntity<>( service.register(customer),HttpStatus.OK);
     }
-    @PostMapping("/customer-login")
+    @PostMapping("/customer/login")
     public ResponseEntity<String> login(@RequestBody Customer customer){
         if(customer==null || customer.getName()==null || customer.getCustPassword()==null){
             return new ResponseEntity<>("need to provide both name and password",HttpStatus.BAD_GATEWAY);
         }
         return new ResponseEntity<>(service.verify(customer),HttpStatus.OK);
     }
-    @GetMapping("/hello-world")
+    @GetMapping("/customer/hello-world")
     public String helloWorld(){
         System.out.println("asdsadsadas");
         return "hello world";

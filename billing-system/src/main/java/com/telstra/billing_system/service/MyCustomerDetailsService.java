@@ -10,15 +10,17 @@ import com.telstra.billing_system.model.CustomerPrincipal;
 import com.telstra.billing_system.repository.CustomerRepo;
 
 @Service
-public class MyCustomerDetailsService implements UserDetailsService{
+public class MyCustomerDetailsService implements UserDetailsService {
     @Autowired
     private CustomerRepo customerRepo;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("Loading user by username: " + username);
         Customer customer = customerRepo.findByName(username);
         if (customer == null) {
-            throw new UsernameNotFoundException("customer not found with username: " + username);
+            throw new UsernameNotFoundException("Customer not found with username: " + username);
         }
-        return new CustomerPrincipal(customer);
+        return new CustomerPrincipal(customer); // Ensure this is correctly implemented
     }
 }
