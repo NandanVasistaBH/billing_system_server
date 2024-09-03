@@ -13,19 +13,21 @@ public class CustomerController {
     @Autowired
     private CustomerService service;
     @PostMapping("/customer/register")
-    public ResponseEntity<String>  register(@RequestBody Customer customer){
-        if(customer==null || customer.getName()==null || customer.getCustPassword()==null || customer.getCustEmail()==null || customer.getCustPhoneNo()==null){
-            return new ResponseEntity<>("need to provide both name,password,phone and email",HttpStatus.BAD_GATEWAY);
+    public ResponseEntity<String> register(@RequestBody Customer cust){
+        System.out.println(cust);
+        if(cust.getUser()==null || cust.getUser().getName()==null || cust.getUser().getPassword()==null || !cust.getUser().getRole().equals("CUSTOMER")){
+            return new ResponseEntity<>("insuffient information provided for customer creation",HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>( service.register(customer),HttpStatus.OK);
+        return new ResponseEntity<>(service.register(cust),HttpStatus.OK);
     }
     @PostMapping("/customer/login")
-    public ResponseEntity<String> login(@RequestBody Customer customer){
-        if(customer==null || customer.getName()==null || customer.getCustPassword()==null){
-            return new ResponseEntity<>("need to provide both name and password",HttpStatus.BAD_GATEWAY);
+    public ResponseEntity<String> login(@RequestBody Customer cust){
+        if(cust.getUser()==null || cust.getUser().getName()==null || cust.getUser().getPassword()==null || !cust.getUser().getRole().equals("CUSTOMER")){
+            return new ResponseEntity<>("insuffient information provided for customer verification",HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(service.verify(customer),HttpStatus.OK);
+        return new ResponseEntity<>(service.verify(cust),HttpStatus.OK);
     }
+    
     @GetMapping("/customer/hello-world")
     public String helloWorld(){
         System.out.println("asdsadsadas");

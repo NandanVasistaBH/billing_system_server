@@ -2,7 +2,6 @@ package com.telstra.billing_system.filters;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,9 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.telstra.billing_system.service.JwtService;
-import com.telstra.billing_system.service.MyCustomerDetailsService;
-import com.telstra.billing_system.service.MyAdminDetailsService;
-import com.telstra.billing_system.service.MySupplierDetailsService;
+import com.telstra.billing_system.service.MyUserDetailsService;
+import com.telstra.billing_system.service.MyUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,12 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
 
-    @Qualifier("MyCustomerDetailsService")
-    private MyCustomerDetailsService myCustomerDetailsService;
-    @Qualifier("MyAdminDetailsService")
-    private MyAdminDetailsService myAdminDetailsService;
-    @Qualifier("MySupplierDetailsService")
-    private MySupplierDetailsService mySupplierDetailsService;
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,17 +37,14 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
-        String requestURI= request.getRequestURI();
-        System.out.println("Request URI: " + requestURI);
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtService.extractUsername(token);
         }
-        UserDetails userDetails=null ;
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if(requestURI.startsWith("/customer")) userDetails = myCustomerDetailsService.loadUserByUsername(username);
-            if(requestURI.startsWith("/admin")) userDetails = myAdminDetailsService.loadUserByUsername(username);
-            if(requestURI.startsWith("/service")) userDetails = mySupplierDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

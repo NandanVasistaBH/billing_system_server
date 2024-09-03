@@ -1,18 +1,25 @@
 package com.telstra.billing_system.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.telstra.billing_system.model.Supplier;
-import com.telstra.billing_system.repository.SupplierRepo;
+import com.telstra.billing_system.repository.SupplierRepository;
+import com.telstra.billing_system.repository.UserRepository;
 
 @Service
 public class SupplierService {
+    @Qualifier("UserRepository")
     @Autowired
-    public SupplierRepo supplierRepo;
+    private UserRepository userRepo;
+
+    @Qualifier("SupplierRepository")
+    @Autowired
+    private SupplierRepository supplierRepo;
     
     @Autowired
     public AuthenticationManager authenticationManager;
@@ -22,33 +29,31 @@ public class SupplierService {
     
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
-	public String register(Supplier supplier) {
-        try {
-            supplier.setBranchPassword(encoder.encode(supplier.getBranchPassword()));
+    public String register(Supplier supplier) {
+        System.out.println(supplier);
+        try{
+            supplier.getUser().setPassword(encoder.encode(supplier.getUser().getPassword()));
+            userRepo.save(supplier.getUser());
             supplierRepo.save(supplier);
-            return jwtService.generateToken(supplier.getName());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-           return "failure";
+            return jwtService.generateToken(supplier.getUser().getName());
         }
-    }
-
+        catch(Exception e){
+            return e.getMessage();
+        }
+    }  
+    
     public String verify(Supplier supplier) {
-        System.out.println("verify service");
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(supplier.getName(), supplier.getBranchPassword())
+                new UsernamePasswordAuthenticationToken(supplier.getUser().getName(), supplier.getUser().getPassword())
             );
-            System.out.println("auth");
             if (authentication.isAuthenticated()) {
-                return jwtService.generateToken(supplier.getName());
+                return jwtService.generateToken(supplier.getUser().getName());
             }
-            return "success";
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return "failure";
-
+            e.printStackTrace(); 
         }
+        return "failure";
     }
     
 }

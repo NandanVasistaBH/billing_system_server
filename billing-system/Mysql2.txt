@@ -1,0 +1,37 @@
+
+create table user
+has id Integer AUTO_INCREMENT ,name,password,role (remaining 3 are varchar(255))
+
+create table Supplier
+id -> REFERENCES user.id 
+branch_loc VARCHAR(255) NOT NULL,
+branch_manager VARCHAR(100) NOT NULL,
+branch_email VARCHAR(100) UNIQUE NOT NULL,
+branch_phone_no VARCHAR(20),
+
+create table Customer
+id->REFERENCES user.id
+cust_email VARCHAR(100) UNIQUE NOT NULL,
+cust_phone_no VARCHAR(20),
+branch_id INT REFERENCES Supplier.id
+
+create table Subscription
+id int AUTO_INCREMENT
+type this can be of 2 values POSTPAID or PREPAID
+description TEXT
+price Double
+no_of_days INT
+
+
+create table Invoice
+id int AUTO_INCREMENT
+customer_id REFERENCES Customer.id
+supplier_id REFERENCES Supplier.id
+subscription_id REFERENCES Subscription.id
+amount_paid  Double
+tax double
+invoiceIssueDate date
+
+create table Admin
+id -> REFERENCES user.id
+validityExpiresAt DATE

@@ -14,17 +14,19 @@ import com.telstra.billing_system.model.Supplier;
 public class SupplierController {
     @Autowired
     private SupplierService service;
-        @PostMapping("/supplier/register")
-    public ResponseEntity<String>  register(@RequestBody Supplier supplier){
-        if(supplier==null || supplier.getName()==null || supplier.getBranchPassword()==null || supplier.getBranchEmail()==null || supplier.getBranchPhoneNo()==null){
-            return new ResponseEntity<>("need to provide both name,password,phone and email",HttpStatus.BAD_GATEWAY);
+    @PostMapping("/supplier/register")
+    public ResponseEntity<String> register(@RequestBody Supplier supplier){
+        System.out.println("hiuiias");
+        System.out.println(supplier);
+        if(supplier.getUser()==null || supplier.getUser().getName()==null || supplier.getUser().getPassword()==null || !supplier.getUser().getRole().equals("SUPPLIER")){
+            return new ResponseEntity<>("insuffient information provided for supplier creation",HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>( service.register(supplier),HttpStatus.OK);
+        return new ResponseEntity<>(service.register(supplier),HttpStatus.OK);
     }
     @PostMapping("/supplier/login")
     public ResponseEntity<String> login(@RequestBody Supplier supplier){
-        if(supplier==null || supplier.getName()==null || supplier.getBranchPassword()==null){
-            return new ResponseEntity<>("need to provide both name and password",HttpStatus.BAD_GATEWAY);
+        if(supplier.getUser()==null || supplier.getUser().getName()==null || supplier.getUser().getPassword()==null || !supplier.getUser().getRole().equals("SUPPLIER")){
+            return new ResponseEntity<>("insuffient information provided for supplier verification",HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(service.verify(supplier),HttpStatus.OK);
     }

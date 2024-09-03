@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration // telling spring boss this is a configuration class use for that
 @EnableWebSecurity // telling spring go with the config mentioned below not the default one
 public class SecurityConfig {
-    @Qualifier("MyAdminDetailsService")
+    @Qualifier("MyUserDetailsService")
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
@@ -34,11 +34,10 @@ public class SecurityConfig {
         // diable csrf
         http.csrf(customizer->customizer.disable());
         http.authorizeHttpRequests(request->request
-                                                    .requestMatchers("/customer/register","/customer/login","/admin/login")
-                                                    .permitAll()
-                                                    .requestMatchers("/admin").hasAnyRole("ADMIN").
-                                                    anyRequest().
-                                                    authenticated()); // all req has to be authenticated except login and register
+                                                .requestMatchers("/customer/register", "/customer/login", "/supplier/login", "/supplier/register")
+                                                .permitAll()
+                                                .anyRequest()
+                                                .authenticated());
         http.httpBasic(Customizer.withDefaults()); // for postman
 
         // as we have disabled csrf we need to make each req a new session to enhance sec by making each session stateless
