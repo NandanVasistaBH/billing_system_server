@@ -1,6 +1,7 @@
 package com.telstra.billing_system.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,7 @@ import com.telstra.billing_system.repository.AdminRepo;
 
 @Primary
 @Service
+@Qualifier("MyAdminDetailsService")
 public class MyAdminDetailsService implements UserDetailsService{
     @Autowired
     private AdminRepo adminRepo;

@@ -36,9 +36,38 @@ public class Supplier {
     @Column(name = "branch_password", nullable = false)
     private String branchPassword;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @OneToMany(mappedBy = "supplier")
     private Set<Customer> customers;
 
     @OneToMany(mappedBy = "supplier")
     private Set<Invoice> invoices;
+
+    public String getName(){
+        return this.name;
+    }
+    public String getBranchPassword(){
+        return this.branchPassword;
+    }
+    public void setName(String name){
+        this.name=name;
+    }
+    public void setBranchPassword(String password){
+        this.branchPassword=password;
+    }
+    public Supplier(Integer branchId, String branchLoc, String branchManager, String branchEmail, String branchPhoneNo,
+            String branchPassword, String name, Set<Customer> customers, Set<Invoice> invoices) {
+        this.branchId = branchId;
+        this.branchLoc = branchLoc;
+        this.branchManager = branchManager;
+        this.branchEmail = branchEmail;
+        this.branchPhoneNo = branchPhoneNo;
+        this.branchPassword = branchPassword;
+        this.name = name;
+        this.customers = customers;
+        this.invoices = invoices;
+    }
+    
 }
