@@ -34,7 +34,7 @@ public class SecurityConfig {
         // diable csrf
         http.csrf(customizer->customizer.disable());
         http.authorizeHttpRequests(request->request
-                                                .requestMatchers("/customer/register", "/customer/login", "/supplier/login", "/supplier/register")
+                                                .requestMatchers("/customer/register", "/customer/login", "/supplier/login", "/supplier/register","/admin/login")
                                                 .permitAll()
                                                 .anyRequest()
                                                 .authenticated());
