@@ -27,22 +27,20 @@ CREATE TABLE Customer (
 -- Create the Subscription table
 CREATE TABLE Subscription (
     subscription_id INT AUTO_INCREMENT PRIMARY KEY,
-    subscription_type VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
     service_days INT NOT NULL,
     no_of_days INT NOT NULL
 );
 
 -- Create the Payment table
 CREATE TABLE Payment (
-    payment_id INT AUTO_INCREMENT PRIMARY KEY,
-    cust_id INT,
-    payment_method VARCHAR(20) NOT NULL,
-    payment_gateway ENUM('Razor Pay') NOT NULL,
+    pay_id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_gateway ENUM('Credit Card', 'Debit Card', 'PayPal', 'Bank Transfer') NOT NULL,
+    type VARCHAR(50) NOT NULL,
     amount_paid DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL,
     last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     transaction_date DATE NOT NULL
-    FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
 );
 
 -- Create the Invoice table
@@ -60,5 +58,5 @@ CREATE TABLE Invoice (
     FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
     FOREIGN KEY (branch_id) REFERENCES Supplier(branch_id),
     FOREIGN KEY (subscription_id) REFERENCES Subscription(subscription_id),
-    FOREIGN KEY (payment_id) REFERENCES Payment(payment_id)
+    FOREIGN KEY (payment_id) REFERENCES Payment(pay_id)
 );

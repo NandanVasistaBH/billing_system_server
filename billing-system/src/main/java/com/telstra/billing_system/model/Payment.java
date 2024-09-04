@@ -1,5 +1,6 @@
 package com.telstra.billing_system.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -11,8 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -26,21 +25,18 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
-    private Integer paymentId;
+    @Column(name = "pay_id")
+    private Integer payId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "payment_gateway", nullable = false)
     private PaymentGateway paymentGateway;
+
+    @Column(name = "type", nullable = false)
+    private String type;
 
     @Column(name = "amount_paid", nullable = false)
     private Double amountPaid;
 
-    
     @Column(name = "status", nullable = false)
     private String status;
 
@@ -48,24 +44,13 @@ public class Payment {
     private LocalDateTime lastUpdate;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate = LocalDate.now();
-    
+    private LocalDate transactionDate;
+
     @OneToMany(mappedBy = "payment")
     private Set<Invoice> invoices;
-
-    @ManyToOne
-    @JoinColumn(name = "cust_id")
-    private Customer customer;
-
-    @Column(name = "razorpayid")
-    private String razorpayid;
     
-    public enum PaymentMethod {
-        CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER , UPI
-    }
-
     public enum PaymentGateway {
-        RAZOR_PAY
+        RazorPay
     }
 
 }

@@ -1,56 +1,37 @@
 package com.telstra.billing_system.controller;
 
-import com.telstra.billing_system.model.Supplier;
-import com.telstra.billing_system.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import com.telstra.billing_system.service.SupplierService;
+import com.telstra.billing_system.model.Supplier;
 
 @RestController
-@RequestMapping("/api/suppliers")
 public class SupplierController {
-
     @Autowired
-    private SupplierService supplierService;
-
-    @PostMapping
-    public ResponseEntity<Supplier> createSupplier(@RequestBody Supplier supplier) {
-        Supplier newSupplier = supplierService.createSupplier(supplier);
-        return new ResponseEntity<>(newSupplier, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Supplier> getSupplierById(@PathVariable Integer id) {
-        Supplier supplier = supplierService.getSupplierById(id);
-        if (supplier != null) {
-            return new ResponseEntity<>(supplier, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    private SupplierService service;
+    @PostMapping("/supplier/register")
+    public ResponseEntity<String> register(@RequestBody Supplier supplier){
+        System.out.println("hiuiias");
+        System.out.println(supplier);
+        if(supplier.getUser()==null || supplier.getUser().getName()==null || supplier.getUser().getPassword()==null || !supplier.getUser().getRole().equals("SUPPLIER")){
+            return new ResponseEntity<>("insuffient information provided for supplier creation",HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(service.register(supplier),HttpStatus.OK);
     }
-
-    @GetMapping
-    public ResponseEntity<List<Supplier>> getAllSuppliers() {
-        List<Supplier> suppliers = supplierService.getAllSuppliers();
-        return new ResponseEntity<>(suppliers, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Supplier> updateSupplier(@PathVariable Integer id, @RequestBody Supplier supplierDetails) {
-        Supplier updatedSupplier = supplierService.updateSupplier(id, supplierDetails);
-        if (updatedSupplier != null) {
-            return new ResponseEntity<>(updatedSupplier, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PostMapping("/supplier/login")
+    public ResponseEntity<String> login(@RequestBody Supplier supplier){
+        if(supplier.getUser()==null || supplier.getUser().getName()==null || supplier.getUser().getPassword()==null || !supplier.getUser().getRole().equals("SUPPLIER")){
+            return new ResponseEntity<>("insuffient information provided for supplier verification",HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(service.verify(supplier),HttpStatus.OK);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSupplier(@PathVariable Integer id) {
-        supplierService.deleteSupplier(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping("/supplier/hello")
+    public String hello(){
+        return "hello";
     }
 }

@@ -1,47 +1,59 @@
 package com.telstra.billing_system.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import com.telstra.billing_system.model.Supplier;
 import com.telstra.billing_system.repository.SupplierRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import com.telstra.billing_system.repository.UserRepository;
 
 @Service
 public class SupplierService {
+    @Qualifier("UserRepository")
+    @Autowired
+    private UserRepository userRepo;
+
+    @Qualifier("SupplierRepository")
+    @Autowired
+    private SupplierRepository supplierRepo;
+    
+    @Autowired
+    public AuthenticationManager authenticationManager;
 
     @Autowired
-    private SupplierRepository supplierRepository;
+    public JwtService jwtService;
+    
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
-    public Supplier createSupplier(Supplier supplier) {
-        return supplierRepository.save(supplier);
-    }
-
-    public Supplier getSupplierById(Integer id) {
-        Optional<Supplier> supplier = supplierRepository.findById(id);
-        return supplier.orElse(null);
-    }
-
-    public List<Supplier> getAllSuppliers() {
-        return supplierRepository.findAll();
-    }
-
-    public Supplier updateSupplier(Integer id, Supplier supplierDetails) {
-        Optional<Supplier> optionalSupplier = supplierRepository.findById(id);
-        if (optionalSupplier.isPresent()) {
-            Supplier supplier = optionalSupplier.get();
-            supplier.setBranchLoc(supplierDetails.getBranchLoc());
-            supplier.setBranchManager(supplierDetails.getBranchManager());
-            supplier.setBranchEmail(supplierDetails.getBranchEmail());
-            supplier.setBranchPhoneNo(supplierDetails.getBranchPhoneNo());
-            supplier.setBranchPassword(supplierDetails.getBranchPassword());
-            return supplierRepository.save(supplier);
+    public String register(Supplier supplier) {
+        System.out.println(supplier);
+        try{
+            supplier.getUser().setPassword(encoder.encode(supplier.getUser().getPassword()));
+            userRepo.save(supplier.getUser());
+            supplierRepo.save(supplier);
+            return jwtService.generateToken(supplier.getUser().getName());
         }
-        return null;
+        catch(Exception e){
+            return e.getMessage();
+        }
+    }  
+    
+    public String verify(Supplier supplier) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(supplier.getUser().getName(), supplier.getUser().getPassword())
+            );
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(supplier.getUser().getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return "failure";
     }
-
-    public void deleteSupplier(Integer id) {
-        supplierRepository.deleteById(id);
-    }
+    
 }

@@ -3,19 +3,15 @@ package com.telstra.billing_system.service;
 import com.telstra.billing_system.model.Payment;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
-import com.telstra.billing_system.model.Invoice; 
 import com.telstra.billing_system.repository.PaymentRepository; 
-import com.telstra.billing_system.repository.InvoiceRepository;
 
 import java.util.List;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service; 
-import java.math.BigDecimal; 
-import java.time.LocalDate; 
 import java.time.LocalDateTime; 
-import java.util.Set; 
+
 
 @Service public class PaymentService 
 {
@@ -47,7 +43,6 @@ import java.util.Set;
 
         System.out.println(razorPayPayment);
 
-        payment.setRazorpayid(razorPayPayment.get("id"));
         payment.setStatus(razorPayPayment.get("status"));
         
 
@@ -62,7 +57,7 @@ import java.util.Set;
     {
         Payment payment = paymentRepository.findById(payId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
-        payment.setPaymentMethod(paymentDetails.getPaymentMethod());
+        payment.setType(paymentDetails.getType());
         payment.setPaymentGateway(paymentDetails.getPaymentGateway());
         payment.setAmountPaid(paymentDetails.getAmountPaid());
         payment.setStatus(paymentDetails.getStatus());

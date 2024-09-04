@@ -1,56 +1,36 @@
 package com.telstra.billing_system.controller;
-
-import com.telstra.billing_system.model.Customer;
-import com.telstra.billing_system.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import com.telstra.billing_system.model.Customer;
+import com.telstra.billing_system.service.CustomerService;
 @RestController
-@RequestMapping("/api/customers")
 public class CustomerController {
-
     @Autowired
-    private CustomerService customerService;
-
-    @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        Customer newCustomer = customerService.createCustomer(customer);
-        return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Integer id) {
-        Customer customer = customerService.getCustomerById(id);
-        if (customer != null) {
-            return new ResponseEntity<>(customer, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    private CustomerService service;
+    @PostMapping("/customer/register")
+    public ResponseEntity<String> register(@RequestBody Customer cust){
+        System.out.println(cust);
+        if(cust.getUser()==null || cust.getUser().getName()==null || cust.getUser().getPassword()==null || !cust.getUser().getRole().equals("CUSTOMER")){
+            return new ResponseEntity<>("insuffient information provided for customer creation",HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(service.register(cust),HttpStatus.OK);
     }
-
-    @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customers = customerService.getAllCustomers();
-        return new ResponseEntity<>(customers, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Integer id, @RequestBody Customer customerDetails) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
-        if (updatedCustomer != null) {
-            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PostMapping("/customer/login")
+    public ResponseEntity<String> login(@RequestBody Customer cust){
+        if(cust.getUser()==null || cust.getUser().getName()==null || cust.getUser().getPassword()==null || !cust.getUser().getRole().equals("CUSTOMER")){
+            return new ResponseEntity<>("insuffient information provided for customer verification",HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(service.verify(cust),HttpStatus.OK);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id) {
-        customerService.deleteCustomer(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    
+    @GetMapping("/customer/hello-world")
+    public String helloWorld(){
+        System.out.println("asdsadsadas");
+        return "hello world";
     }
 }

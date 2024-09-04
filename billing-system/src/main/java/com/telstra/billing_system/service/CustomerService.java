@@ -1,47 +1,57 @@
 package com.telstra.billing_system.service;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import com.telstra.billing_system.repository.UserRepository;
 
 @Service
 public class CustomerService {
+    @Qualifier("UserRepository")
+    @Autowired
+    private UserRepository userRepo;
+
+    @Qualifier("CustomerRepository")
+    @Autowired
+    private CustomerRepository customerRepo;
+    
+    @Autowired
+    public AuthenticationManager authenticationManager;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    public JwtService jwtService;
+    
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
-    public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
-    }
-
-    public Customer getCustomerById(Integer id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        return customer.orElse(null);
-    }
-
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    public Customer updateCustomer(Integer id, Customer customerDetails) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
-            customer.setName(customerDetails.getName());
-            customer.setCustEmail(customerDetails.getCustEmail());
-            customer.setCustPhoneNo(customerDetails.getCustPhoneNo());
-            customer.setSupplier(customerDetails.getSupplier());
-            customer.setCustPassword(customerDetails.getCustPassword());
-            return customerRepository.save(customer);
+    public String register(Customer customer) {
+        try{
+            customer.getUser().setPassword(encoder.encode(customer.getUser().getPassword()));
+            userRepo.save(customer.getUser());
+            customerRepo.save(customer);
+            return jwtService.generateToken(customer.getUser().getName());
         }
-        return null;
+        catch(Exception e){
+            return e.getMessage();
+        }
+    }  
+    
+    public String verify(Customer customer) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(customer.getUser().getName(), customer.getUser().getPassword())
+            );
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(customer.getUser().getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return "failure";
     }
-
-    public void deleteCustomer(Integer id) {
-        customerRepository.deleteById(id);
-    }
+    
 }
