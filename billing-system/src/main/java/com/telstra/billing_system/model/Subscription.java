@@ -26,6 +26,7 @@ public class Subscription {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SubscriptionType type;
 
     @Column(nullable = false)
