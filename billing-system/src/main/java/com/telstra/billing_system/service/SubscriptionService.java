@@ -1,6 +1,7 @@
 package com.telstra.billing_system.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,14 +53,30 @@ public class SubscriptionService {
         return subscriptionRepo.findAll();
     }
 
-    // Method to get all postpaid subscriptions
     public List<Subscription> getAllPostpaidSubscriptions() {
         return subscriptionRepo.findByType(SubscriptionType.POSTPAID);
     }
 
-    // Method to get all prepaid subscriptions
     public List<Subscription> getAllPrepaidSubscriptions() {
         return subscriptionRepo.findByType(SubscriptionType.PREPAID);
     }
-    
+    public boolean deleteSubscription(Integer id, String authorizationHeader) {
+        try {
+            String token = extractToken(authorizationHeader);
+            if (jwtService.isTokenExpired(token)) {
+                return false;
+            }
+            if (!jwtService.extractUsername(token).equals(ADMIN)) {
+                return false;
+            }
+            Optional<Subscription> subscription = subscriptionRepo.findById(id);
+            if (subscription.isPresent()) {
+                subscriptionRepo.delete(subscription.get());
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
 }
