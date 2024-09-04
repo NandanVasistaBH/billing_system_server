@@ -32,11 +32,11 @@ public class Payment {
     @Column(name = "payment_gateway", nullable = false)
     private PaymentGateway paymentGateway;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "PaymentMethod", nullable = false)
+    private String PaymentMethod;
 
-    @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)
-    private BigDecimal amountPaid;
+    @Column(name = "amount_paid", nullable = false)
+    private Double amountPaid;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -51,7 +51,7 @@ public class Payment {
     private Set<Invoice> invoices;
     
     public enum PaymentGateway {
-        CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER
+        RazorPay
     }
 
 }
