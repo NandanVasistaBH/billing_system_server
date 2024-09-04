@@ -1,10 +1,12 @@
 package com.telstra.billing_system.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
-
+import com.telstra.billing_system.model.Subscription.SubscriptionType;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.repository.SubscriptionRepository;
 
@@ -45,6 +47,19 @@ public class SubscriptionService {
             return authorizationHeader.substring(7); // Remove "Bearer " prefix
         }
         return null;
+    }
+    public List<Subscription> getAllSubscriptions() {
+        return subscriptionRepo.findAll();
+    }
+
+    // Method to get all postpaid subscriptions
+    public List<Subscription> getAllPostpaidSubscriptions() {
+        return subscriptionRepo.findByType(SubscriptionType.POSTPAID);
+    }
+
+    // Method to get all prepaid subscriptions
+    public List<Subscription> getAllPrepaidSubscriptions() {
+        return subscriptionRepo.findByType(SubscriptionType.PREPAID);
     }
     
 }
