@@ -11,30 +11,30 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+ 
 @Entity
 @Table(name = "customer")
 @Data
 @NoArgsConstructor
 public class Customer {
-
+ 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+ 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
+ 
     private String name;
     @NotBlank
     @Email
     @Size(max = 100)
     private String custEmail;
-
+ 
     @Size(max = 20)
     private String custPhoneNo;
-
+ 
     @ManyToOne
     @JoinColumn(name = "branch_id")
     private Supplier supplier;

@@ -9,25 +9,23 @@ import org.springframework.stereotype.Service;
 import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.repository.CustomerRepository;
 import com.telstra.billing_system.repository.UserRepository;
-
+ 
 @Service
 public class CustomerService {
     @Qualifier("UserRepository")
     @Autowired
     private UserRepository userRepo;
-
+ 
     @Qualifier("CustomerRepository")
     @Autowired
     private CustomerRepository customerRepo;
-    
     @Autowired
     public AuthenticationManager authenticationManager;
-
+ 
     @Autowired
     public JwtService jwtService;
-    
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-
+ 
     public String register(Customer customer) {
         try{
             customer.getUser().setPassword(encoder.encode(customer.getUser().getPassword()));
@@ -39,7 +37,6 @@ public class CustomerService {
             return e.getMessage();
         }
     }  
-    
     public String verify(Customer customer) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -53,5 +50,4 @@ public class CustomerService {
         }
         return "failure";
     }
-    
 }

@@ -27,7 +27,6 @@ public class CustomerController {
         }
         return new ResponseEntity<>(service.verify(cust),HttpStatus.OK);
     }
-    
     @GetMapping("/customer/hello-world")
     public String helloWorld(){
         System.out.println("asdsadsadas");
