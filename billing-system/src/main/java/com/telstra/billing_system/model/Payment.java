@@ -35,7 +35,7 @@ public class Payment {
     @Column(name = "PaymentMethod", nullable = false)
     private String PaymentMethod;
 
-    @Column(name = "amount_paid", nullable = false)
+    @Column(name = "amount_paid", nullable = false, precision = 2)
     private Double amountPaid;
 
     @Column(name = "status", nullable = false)
@@ -47,9 +47,6 @@ public class Payment {
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
-    @OneToMany(mappedBy = "payment")
-    private Set<Invoice> invoices;
-    
     public enum PaymentGateway {
         RazorPay
     }

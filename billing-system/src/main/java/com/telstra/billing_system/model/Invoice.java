@@ -50,7 +50,7 @@ public class Invoice {
     private LocalDateTime lastUpdatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "payment_id") // Foreign key column in the invoice table
+    @JoinColumn(name = "payment_id", foreignKey = @ForeignKey(name = "fk_payment"),nullable = true)
     private Payment payment;
 
     @PrePersist

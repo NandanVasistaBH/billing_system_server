@@ -21,9 +21,18 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping("/create-postpaid")
-    public ResponseEntity<String> createInvoice(@RequestBody Invoice invoice) {
+    public ResponseEntity<String> createPostpaidInvoice(@RequestBody Invoice invoice) {
         try {
-            String resp = invoiceService.createInvoice(invoice);
+            String resp = invoiceService.createPostpaidInvoice(invoice);
+            return new ResponseEntity<>(resp, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("failure", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/create-prepaid")
+    public ResponseEntity<String> createPrepaidInvoice(@RequestBody Invoice invoice) {
+        try {
+            String resp = invoiceService.createPrepaidInvoice(invoice);
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("failure", HttpStatus.INTERNAL_SERVER_ERROR);
