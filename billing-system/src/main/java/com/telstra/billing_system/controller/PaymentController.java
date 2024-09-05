@@ -2,9 +2,6 @@ package com.telstra.billing_system.controller;
 
 import com.telstra.billing_system.model.Payment;
 import com.telstra.billing_system.service.PaymentService;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,13 +46,4 @@ public class PaymentController
     {
         return ResponseEntity.ok(paymentService.getPayment(payId));
     }
-
-    // @PostMapping("/customer-payments/{customerId}")
-    // public ResponseEntity<List<Payment>> getAllPaymentsOfCustomer(@PathVariable Integer customerId){
-    //         if(customerId==null) {
-    //             return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-    //         }
-    //         return new ResponseEntity<>(paymentService.getAllPaymentsOfCustomer(customerId))
-    // }
-
 }

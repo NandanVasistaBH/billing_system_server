@@ -81,9 +81,4 @@ import java.time.LocalDateTime;
         return paymentRepository.findAll();
     }
 
-    public Object getAllPaymentsOfCustomer(Integer customerId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllPaymentsOfCustomer'");
-    }
-
 }
