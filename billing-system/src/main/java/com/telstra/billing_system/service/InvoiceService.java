@@ -44,11 +44,6 @@ public class InvoiceService {
             Subscription subscription = optionalSubscription.get();
             double amountPaid = invoice.getAmountPaid();
             double subscriptionPrice = subscription.getPrice();
-            // BigDecimal amountPaidBD = new BigDecimal(amountPaid);
-            // BigDecimal subscriptionPriceBD = new BigDecimal(subscriptionPrice);
-            // BigDecimal roundedAmountPaid = amountPaidBD.setScale(2, RoundingMode.HALF_UP);
-            // BigDecimal roundedSubscriptionPrice = subscriptionPriceBD.setScale(2, RoundingMode.HALF_UP);
-            System.out.println(amountPaid+" -> " + subscriptionPrice);
             if(subscriptionPrice!=amountPaid) return "amount not paid correctly";
             invoiceRepository.save(invoice);
             return "success";
