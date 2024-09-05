@@ -1,5 +1,6 @@
 package com.telstra.billing_system.controller;
 
+import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,9 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getInvoiceById(@PathVariable("id") Integer id) {
-        return invoiceService.getInvoiceById(id)
-                .map(invoice -> new ResponseEntity<>(invoice, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<InvoiceResponseDTO> getInvoiceById(@PathVariable("id") Integer id) {
+        InvoiceResponseDTO resp= invoiceService.getInvoiceById(id);
+        if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp,HttpStatus.OK);
     }
 }
