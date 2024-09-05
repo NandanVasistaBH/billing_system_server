@@ -7,7 +7,9 @@ import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("InvoiceService")
 public class InvoiceService {
@@ -36,5 +38,14 @@ public class InvoiceService {
         SupplierDTO supplierDTO = new SupplierDTO(invoice.getSupplier());
         return new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
         
+    }
+    public List<InvoiceResponseDTO> getAllInvoiceByCustomerID(Integer customerId) {
+        List<Invoice> invoices = invoiceRepository.findByCustomerId(customerId);
+        
+        return invoices.stream().map(invoice -> {
+            CustomerDTO customerDTO = new CustomerDTO(invoice.getCustomer());
+            SupplierDTO supplierDTO = new SupplierDTO(invoice.getSupplier());
+            return new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
+        }).collect(Collectors.toList());
     }
 }

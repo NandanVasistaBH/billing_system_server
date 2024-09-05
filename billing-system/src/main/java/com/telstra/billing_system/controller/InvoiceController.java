@@ -3,7 +3,11 @@ package com.telstra.billing_system.controller;
 import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.service.InvoiceService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/invoice")
 public class InvoiceController {
 
+    @Qualifier("InvoiceService")
     @Autowired
     private InvoiceService invoiceService;
 
@@ -31,4 +36,11 @@ public class InvoiceController {
         if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp,HttpStatus.OK);
     }
+    @GetMapping("/all-invoice-customer/{id}")
+    public ResponseEntity<List<InvoiceResponseDTO>> getAllInvoiceByCustomerId(@PathVariable("id") Integer id) {
+        List<InvoiceResponseDTO> resp= invoiceService.getAllInvoiceByCustomerID(id);
+        if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp,HttpStatus.OK);
+    }
 }
+
