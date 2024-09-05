@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.repository.CustomerRepository;
 import com.telstra.billing_system.repository.UserRepository;
@@ -49,5 +50,17 @@ public class CustomerService {
             e.printStackTrace(); 
         }
         return "failure";
+    }
+    public CustomerDTO getCustomerFromName(String name){
+        try {
+            System.out.println("hiii");
+            Customer response = customerRepo.findByName(name);
+            System.out.println(response);
+            if(response==null) return null;
+            return new CustomerDTO(response);
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+           return null;
+        }
     }
 }
