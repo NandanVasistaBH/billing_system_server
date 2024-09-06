@@ -37,11 +37,8 @@ public class Payment {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "last_update")
-    private LocalDateTime lastUpdate;
-
-    @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate;
+    @Column(name = "transaction_date",nullable = false)
+    private LocalDateTime transactionDate;
 
     public enum PaymentGateway {
         RazorPay

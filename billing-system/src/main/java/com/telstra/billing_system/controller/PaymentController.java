@@ -21,6 +21,15 @@ public class PaymentController
         return "index";
     }
     
+    @PostMapping(value="/add-payment",produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Payment> addPayment(@RequestBody String razorpayPaymentId) throws Exception
+    {
+        System.out.println("current payments razorPay id "+ razorpayPaymentId);
+        if(razorpayPaymentId==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(paymentService.addPayment(razorpayPaymentId),HttpStatus.OK);
+    }
+
     @PostMapping(value="/create",produces = "application/json")
     @ResponseBody
     public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) throws Exception

@@ -1,6 +1,7 @@
 package com.telstra.billing_system.service; 
 
 import com.telstra.billing_system.model.Payment;
+import com.telstra.billing_system.model.Payment.PaymentGateway;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.telstra.billing_system.repository.PaymentRepository; 
@@ -9,7 +10,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service; 
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime; 
 
 @Service public class PaymentService 
@@ -25,15 +28,37 @@ import java.time.LocalDateTime;
     private String razorPaySecret;
 
     private RazorpayClient client;
-
-
-
     
+    public Payment addPayment(String razorpayPaymentId) throws Exception
+    {
+
+        RazorpayClient razorpay =  new RazorpayClient(razorPayKey,razorPaySecret);
+        com.razorpay.Payment rzPay = razorpay.payments.fetch(razorpayPaymentId);
+        Payment payment = new Payment();
+        // Double amountt = new Double(amount);
+        System.out.println(rzPay);
+        String amount = rzPay.get("amount") + "";
+        System.out.println(amount);
+        if(rzPay.get("amount") instanceof Double) {
+            System.out.println("double");
+        } else {
+            System.out.println("not double");
+        }
+        payment.setAmountPaid(Double.valueOf(amount)/100);
+        payment.setStatus(rzPay.get("status"));
+        payment.setPaymentMethod(rzPay.get("method"));
+        payment.setPaymentGateway(PaymentGateway.RazorPay);
+        payment.setTransactionDate(LocalDateTime.now());
+        paymentRepository.save(payment);
+        return payment;
+
+    }
+
     public Payment createPayment(Payment payment) throws Exception
     {
         JSONObject paymentRequest=new JSONObject();
 
-        paymentRequest.put("amount", payment.getAmountPaid() * 100);
+        paymentRequest.put("amount", payment.getAmountPaid()*100);
         paymentRequest.put("currency", "INR");
         // paymentRequest.put("receipt", paymentRepository.findCustomerEmailByCustomerId());
 
@@ -47,7 +72,7 @@ import java.time.LocalDateTime;
 
         System.out.println(razorPayPayment);
 
-        paymentRepository.save(payment);
+        // paymentRepository.save(payment);
 
         return payment;
     }
@@ -60,7 +85,6 @@ import java.time.LocalDateTime;
         payment.setPaymentGateway(paymentDetails.getPaymentGateway());
         payment.setAmountPaid(paymentDetails.getAmountPaid());
         payment.setStatus(paymentDetails.getStatus());
-        payment.setLastUpdate(LocalDateTime.now());
         payment.setTransactionDate(paymentDetails.getTransactionDate());
         return paymentRepository.save(payment);
     }
