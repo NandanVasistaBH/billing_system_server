@@ -70,4 +70,5 @@ public class InvoiceService {
             return new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
         }).collect(Collectors.toList());
     }
+    
 }

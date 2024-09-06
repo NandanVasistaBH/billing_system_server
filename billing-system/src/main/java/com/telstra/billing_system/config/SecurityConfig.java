@@ -33,7 +33,7 @@ public class SecurityConfig {
         // Disable CSRF for stateless APIs
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/customer/register", "/customer/login", "/supplier/login", "/supplier/register", "/admin/login", "/create")
+                .requestMatchers("/customer/register", "/customer/login", "/supplier/login", "/supplier/register", "/admin/login", "/create","/invoice/{id}")
                 .permitAll()
                 .anyRequest()
                 .authenticated());
