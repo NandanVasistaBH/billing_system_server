@@ -7,6 +7,7 @@ import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.SubscriptionRepository;
+import com.telstra.billing_system.utils.Mail;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +21,9 @@ public class InvoiceService {
     @Qualifier("InvoiceRepository")
     @Autowired
     private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    public Mail mail;
 
     @Qualifier("SubscriptionRepository")
     @Autowired
@@ -58,7 +62,10 @@ public class InvoiceService {
         Invoice invoice = optionalInvoice.get();
         CustomerDTO customerDTO = new CustomerDTO(invoice.getCustomer());
         SupplierDTO supplierDTO = new SupplierDTO(invoice.getSupplier());
-        return new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
+        InvoiceResponseDTO response = new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
+        System.out.println(response.toString());
+        System.out.println(mail.sendMail(response.getCustomerDTO().getCustEmail(),response.toString(),"invoice from telstra"));
+        return response;
         
     }
     public List<InvoiceResponseDTO> getAllInvoiceByCustomerID(Integer customerId) {
