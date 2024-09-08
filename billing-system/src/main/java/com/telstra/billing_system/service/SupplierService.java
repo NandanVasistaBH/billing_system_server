@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.telstra.billing_system.dto.SupplierDTO;
 import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.model.Supplier;
@@ -74,6 +75,17 @@ public class SupplierService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+    public SupplierDTO getSupplierFromName(String name){
+        try {
+            Supplier response = supplierRepo.findByName(name);
+            System.out.println(response);
+            if(response==null) return null;
+            return new SupplierDTO(response);
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+           return null;
         }
     }
 }

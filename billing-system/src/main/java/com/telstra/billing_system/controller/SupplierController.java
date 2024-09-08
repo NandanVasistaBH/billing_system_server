@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.telstra.billing_system.service.SupplierService;
 import com.telstra.billing_system.dto.CustomerDTO;
+import com.telstra.billing_system.dto.SupplierDTO;
 import com.telstra.billing_system.model.Supplier;
 import java.util.List;
 @RestController
@@ -22,7 +23,6 @@ public class SupplierController {
     private SupplierService service;
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Supplier supplier){
-        System.out.println("hiuiias");
         System.out.println(supplier);
         if(supplier.getUser()==null || supplier.getUser().getName()==null || supplier.getUser().getPassword()==null || !supplier.getUser().getRole().equals("SUPPLIER")){
             return new ResponseEntity<>("insuffient information provided for supplier creation",HttpStatus.BAD_REQUEST);
@@ -47,6 +47,15 @@ public class SupplierController {
         List<CustomerDTO> customers = service.listOfCustomerOfASupplier(Integer.parseInt(supplierId));
         if (customers == null || customers.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(customers, HttpStatus.OK);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<SupplierDTO> getSupplierFromName(@RequestParam String name) {
+        if (name == null || name.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        SupplierDTO resp = service.getSupplierFromName(name);
+        if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
 }
