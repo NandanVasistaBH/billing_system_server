@@ -33,6 +33,7 @@ pipeline {
                     try {
                         bat "docker rmi -f billing-system"
                         bat "docker rm -f mysql-container"
+                        bat "docker rm -f billing-system"
                         echo "Removed existing Docker image and building a new one and deleting the container of mysql"
                     } catch(Exception e) {
                         echo "Exception occurred: " + e.toString()
