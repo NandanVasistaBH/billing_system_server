@@ -88,4 +88,18 @@ public class SupplierService {
            return null;
         }
     }
+    public List<SupplierDTO> getAllSuppliers(){
+        try {
+            List<Supplier> response = supplierRepo.findAll();
+            if(response.isEmpty() ) return null;
+            List<SupplierDTO> list=new ArrayList<>();
+            for(Supplier supplier:response){
+                list.add(new SupplierDTO(supplier));
+            }
+            return list;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 }

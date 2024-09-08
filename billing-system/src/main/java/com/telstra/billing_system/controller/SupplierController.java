@@ -57,5 +57,11 @@ public class SupplierController {
         if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<SupplierDTO>> getAllSuppliers(){
+        List<SupplierDTO> resp = service.getAllSuppliers();
+        if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp,HttpStatus.OK);
+    }
 
 }
