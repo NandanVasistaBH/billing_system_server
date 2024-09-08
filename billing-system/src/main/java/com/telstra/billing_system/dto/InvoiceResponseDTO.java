@@ -12,6 +12,7 @@ public class InvoiceResponseDTO {
     private SupplierDTO supplierDTO;
     private Subscription subscription;
     private Double amountPaid,tax;
+    private Integer id;
     private LocalDate invoiceIssueDate;
     private LocalDateTime lastUpdatedAt;
     public InvoiceResponseDTO(CustomerDTO customerDTO,SupplierDTO supplierDTO,Subscription subscription,Invoice invoice){
@@ -22,5 +23,6 @@ public class InvoiceResponseDTO {
         this.tax=invoice.getTax();
         this.invoiceIssueDate=invoice.getInvoiceIssueDate();
         this.lastUpdatedAt=invoice.getLastUpdatedAt();
+        this.id=invoice.getId();
     }
 }
