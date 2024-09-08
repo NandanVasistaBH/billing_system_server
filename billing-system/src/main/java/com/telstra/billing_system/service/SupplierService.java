@@ -7,11 +7,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.telstra.billing_system.dto.CustomerDTO;
+import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.model.Supplier;
+import com.telstra.billing_system.repository.CustomerRepository;
 import com.telstra.billing_system.repository.SupplierRepository;
 import com.telstra.billing_system.repository.UserRepository;
-
-@Service
+import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
+@Service("SupplierService")
 public class SupplierService {
     @Qualifier("UserRepository")
     @Autowired
@@ -20,6 +25,10 @@ public class SupplierService {
     @Qualifier("SupplierRepository")
     @Autowired
     private SupplierRepository supplierRepo;
+
+    @Qualifier("CustomerRepository")
+    @Autowired
+    private CustomerRepository customerRepo;
     
     @Autowired
     public AuthenticationManager authenticationManager;
@@ -55,5 +64,16 @@ public class SupplierService {
         }
         return "failure";
     }
-    
+    public List<CustomerDTO> listOfCustomerOfASupplier(Integer supplierId){
+        try {
+            Optional<List<Customer>> resp = customerRepo.findBySupplierId(supplierId);
+            if(resp.isEmpty()) return null;
+            List<CustomerDTO> list = new ArrayList<>();
+            for(Customer cust: resp.get()) list.add(new CustomerDTO(cust));
+            return list;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 }

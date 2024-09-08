@@ -15,7 +15,7 @@ import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.UserRepository;
 import java.util.Optional;
  
-@Service
+@Service("CustomerService")
 public class CustomerService {
     @Qualifier("UserRepository")
     @Autowired
@@ -36,6 +36,7 @@ public class CustomerService {
  
     public String register(Customer customer) {
         try{
+            System.out.println(customer);
             customer.getUser().setPassword(encoder.encode(customer.getUser().getPassword()));
             userRepo.save(customer.getUser());
             customerRepo.save(customer);
