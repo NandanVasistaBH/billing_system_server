@@ -22,23 +22,43 @@ pipeline {
                 '''
             }
         }
-        stage("Pull an image to check if docker exists"){
-            steps{
+        stage("Pull Docker Image") {
+            steps {
                 bat "docker pull alpine"
             }
         }
-        stage("Build Docker image") {
+        stage("Build Docker Image") {
             steps {
                 script {
-                    try{
+                    try {
                         bat "docker rmi -f billing-system"
-                        echo "REMOVED existing docker image and building a new one"
-                    }
-                    catch(Exception e){
-                        echo "Exception occurred "+e.toString()
+                        echo "Removed existing Docker image and building a new one"
+                    } catch(Exception e) {
+                        echo "Exception occurred: " + e.toString()
                     }
                     bat "cd billing-system && docker build -t billing-system ."
                 }
+            }
+        }
+        stage("Create Docker Network") {
+            steps {
+                bat '''
+                docker network create my-network || echo "Network already exists"
+                '''
+            }
+        }
+        stage("Run MySQL Container") {
+            steps {
+                bat '''
+                docker run -d --name mysql-container --network my-network -p 3307:3306 -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=billing_system mysql:latest
+                '''
+            }
+        }
+        stage("Run Spring Boot Container") {
+            steps {
+                bat '''
+                docker run -d --name springboot-app --network my-network -p 8080:8080 billing-system
+                '''
             }
         }
     }
