@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service("InvoiceService")
 public class InvoiceService {
+    private static final int NUMBER_OF_TOP_SUBSCRIPTION=3;
     @Qualifier("InvoiceRepository")
     @Autowired
     private InvoiceRepository invoiceRepository;
@@ -76,6 +77,13 @@ public class InvoiceService {
             SupplierDTO supplierDTO = new SupplierDTO(invoice.getSupplier());
             return new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
         }).collect(Collectors.toList());
+    }
+    public List<Subscription> getTopSubscription(){
+        List<Object[]> results = invoiceRepository.findTopSubscriptions();
+        return results.stream()
+                      .limit(NUMBER_OF_TOP_SUBSCRIPTION)
+                      .map(result -> (Subscription) result[0])
+                      .collect(Collectors.toList());
     }
     
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.telstra.billing_system.model.Subscription;
+import com.telstra.billing_system.service.InvoiceService;
 import com.telstra.billing_system.service.SubscriptionService;
 @RequestMapping("/subscriptions")
 @RestController
@@ -20,6 +21,9 @@ public class SubscriptionController {
     @Qualifier("SubscriptionService")
     @Autowired
     private SubscriptionService service;
+    @Qualifier("InvoiceService")
+    @Autowired
+    private InvoiceService invoiceService;
     @PostMapping("/create-subscription")
     public ResponseEntity<String> createSubscription(@RequestBody Subscription subscription, @RequestHeader("Authorization") String authorizationHeader){
         if(subscription==null || subscription.getType()==null || subscription.getPrice()==null || subscription.getNoOfDays()==null){
@@ -54,5 +58,11 @@ public class SubscriptionController {
             return new ResponseEntity<>("Deleted", HttpStatus.OK);
         }
         return new ResponseEntity<>("Only ADMIN can delete or Subscription not found", HttpStatus.UNAUTHORIZED);
+    }
+    @GetMapping("/top")
+    public ResponseEntity<List<Subscription>> getTopSubscriptions(){
+        List<Subscription> resp =invoiceService.getTopSubscription();
+        if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp,HttpStatus.OK);
     }
 }
