@@ -39,6 +39,21 @@ public class InvoiceService {
             return "failure";
         }
     }
+    public String updatePostpaidInvoice(Invoice invoice) {
+        try {
+            Optional<Invoice> existingInvoice = invoiceRepository.findById(invoice.getId());
+            if (!existingInvoice.isPresent()) {
+                return "Invoice not found";
+            }
+            Invoice invoiceToUpdate = existingInvoice.get();
+            invoiceToUpdate.setAmountPaid(invoice.getAmountPaid());
+            invoiceRepository.save(invoiceToUpdate);
+            return "success";
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "failure";
+        }
+    }
     public String createPrepaidInvoice(Invoice invoice) {
         try {
             Optional<Subscription> optionalSubscription = subscriptionRepository.findById(invoice.getSubscription().getId());
