@@ -81,4 +81,14 @@ public class CustomerService {
             return null;
         }
     }
+    public Boolean isNameUnique(String name){
+        try{
+            System.out.println(customerRepo.findByName(name));
+            if(customerRepo.findByName(name)==null) return true;
+            return false;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 }

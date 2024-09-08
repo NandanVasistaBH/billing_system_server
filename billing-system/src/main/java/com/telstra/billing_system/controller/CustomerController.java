@@ -53,6 +53,10 @@ public class CustomerController {
         if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
-
+    @GetMapping("is-name-unique")
+    public ResponseEntity<Boolean> isNameUnique(@RequestParam String name){
+        if(name==null) return new ResponseEntity<>(Boolean.FALSE,HttpStatus.NOT_FOUND);// empty string not allowed
+        return new ResponseEntity<>( service.isNameUnique(name),HttpStatus.OK);
+    }
 
 }
