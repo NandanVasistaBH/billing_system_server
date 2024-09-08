@@ -2,6 +2,8 @@ package com.telstra.billing_system.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +47,23 @@ public class CustomerController {
         if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+    @GetMapping("/details-from-token")
+    public ResponseEntity<CustomerDTO> getCustomerFromToken() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username;
+    if (principal instanceof UserDetails) {
+        username = ((UserDetails) principal).getUsername();
+    } else {
+        username = principal.toString();
+    }
+ 
+    if (username == null || username.isEmpty()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    CustomerDTO resp = service.getCustomerFromName(username);
+    if (resp == null) {
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<>(resp, HttpStatus.OK);
+}
     @GetMapping("/latest-subscription")
     public ResponseEntity<Subscription> getLastSubscriptionOfACustomer(@RequestParam String customerId){
         System.out.println(customerId+" lastest subs");
