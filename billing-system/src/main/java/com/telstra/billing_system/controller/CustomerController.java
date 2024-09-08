@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.model.Customer;
+import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.service.CustomerService;
 @RestController
 @RequestMapping("/customer")
@@ -41,6 +42,14 @@ public class CustomerController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         CustomerDTO resp = service.getCustomerFromName(name);
+        if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+    @GetMapping("/latest-subscription")
+    public ResponseEntity<Subscription> getLastSubscriptionOfACustomer(@RequestParam String customerId){
+        System.out.println(customerId+" lastest subs");
+        if(customerId==null)  return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        Subscription resp = service.getLastSubscriptionOfACustomer(customerId);
         if (resp == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }

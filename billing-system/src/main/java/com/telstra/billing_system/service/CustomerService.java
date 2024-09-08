@@ -8,8 +8,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.model.Customer;
+import com.telstra.billing_system.model.Invoice;
+import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.repository.CustomerRepository;
+import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.UserRepository;
+import java.util.Optional;
  
 @Service
 public class CustomerService {
@@ -20,6 +24,9 @@ public class CustomerService {
     @Qualifier("CustomerRepository")
     @Autowired
     private CustomerRepository customerRepo;
+    @Qualifier("InvoiceRepository")
+    @Autowired
+    private InvoiceRepository invoiceRepo;
     @Autowired
     public AuthenticationManager authenticationManager;
  
@@ -61,6 +68,16 @@ public class CustomerService {
         } catch (Exception e) {
            System.out.println(e.getMessage());
            return null;
+        }
+    }
+    public Subscription getLastSubscriptionOfACustomer(String customerId){
+        try{
+            Optional<Invoice> latestInvoice = invoiceRepo.findLatestInvoiceByCustomerId(customerId);
+            if(latestInvoice.isEmpty()) return null;
+            return latestInvoice.get().getSubscription();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 }
