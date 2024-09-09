@@ -51,7 +51,6 @@ import java.time.LocalDateTime;
         payment.setTransactionDate(LocalDateTime.now());
         paymentRepository.save(payment);
         return payment;
-
     }
 
     public Payment createPayment(Payment payment) throws Exception

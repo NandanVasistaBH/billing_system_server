@@ -56,6 +56,7 @@ public class InvoiceService {
     }
     public String createPrepaidInvoice(Invoice invoice) {
         try {
+            System.out.println("invoice    --->  "+invoice);
             Optional<Subscription> optionalSubscription = subscriptionRepository.findById(invoice.getSubscription().getId());
             if(optionalSubscription.isEmpty()) return "no subscription like that exists";
             Subscription subscription = optionalSubscription.get();

@@ -29,7 +29,7 @@ public class PaymentController
         if(razorpayPaymentId==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(paymentService.addPayment(razorpayPaymentId),HttpStatus.OK);
     }
-
+    
     @PostMapping(value="/create",produces = "application/json")
     @ResponseBody
     public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) throws Exception
