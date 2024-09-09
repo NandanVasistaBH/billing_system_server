@@ -8,7 +8,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: '*/stable']],
                     userRemoteConfigs: [[url: 'https://github.com/NandanVasistaBH/billing_system_server.git']]
                 ])
             }
