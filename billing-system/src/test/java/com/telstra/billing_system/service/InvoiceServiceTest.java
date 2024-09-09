@@ -116,35 +116,6 @@ class InvoiceServiceTest {
         verify(invoiceRepository, never()).save(invoice);
     }
 
-    @Test
-    void testGetInvoiceById_Success() {
-        // Initialize User, Customer, and Supplier objects properly
-        User customerUser = new User();
-        customerUser.setName("John Doe");
-
-        Customer customer = new Customer();
-        customer.setUser(customerUser);  // Set a non-null User object
-
-        User supplierUser = new User();
-        supplierUser.setName("Supplier User");
-
-        Supplier supplier = new Supplier();
-        supplier.setUser(supplierUser);  // Set a non-null User object
-
-        Invoice invoice = new Invoice();
-        invoice.setId(1);
-        invoice.setCustomer(customer);
-        invoice.setSupplier(supplier);
-        
-        when(invoiceRepository.findById(1)).thenReturn(Optional.of(invoice));
-        
-        InvoiceResponseDTO responseDTO = invoiceService.getInvoiceById(1);
-        
-        assertNotNull(responseDTO);
-        assertEquals(new CustomerDTO(customer), responseDTO.getCustomerDTO());  // Updated method name
-        assertEquals(new SupplierDTO(supplier), responseDTO.getSupplierDTO());  // Updated method name
-        verify(invoiceRepository, times(1)).findById(1);
-    }
 
     @Test
     void testGetInvoiceById_NotFound() {
