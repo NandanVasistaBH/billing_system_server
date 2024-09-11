@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,5 +65,25 @@ public class SupplierController {
         if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp,HttpStatus.OK);
     }
+    
+    @GetMapping("/details-from-token")
+    public ResponseEntity<SupplierDTO> getCustomerFromToken() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username;
+    if (principal instanceof UserDetails) {
+        username = ((UserDetails) principal).getUsername();
+    } else {
+        username = principal.toString();
+    }
+    System.out.println(username);
+ 
+    if (username == null || username.isEmpty()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    SupplierDTO resp = service.getSupplierFromName(username);
+    System.out.println(resp);
+    if (resp == null) {
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<>(resp, HttpStatus.OK);
+}
 
 }
