@@ -4,7 +4,7 @@ import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import com.telstra.billing_system.exceptions.MailException;
 import java.util.Properties;
 
 @Service("MailSender")
@@ -28,7 +28,7 @@ public class MailSender {
     @Value("${mail.smtp.rejectUnauthorized}")
     private boolean rejectUnauthorized;
 
-    public void sendEmail(String to, String subject, String text) throws MessagingException {
+    public void sendEmail(String to, String subject, String text) throws MailException,MessagingException {
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);

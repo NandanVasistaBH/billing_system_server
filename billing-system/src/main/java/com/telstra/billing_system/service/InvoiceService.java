@@ -3,11 +3,13 @@ package com.telstra.billing_system.service;
 import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.dto.SupplierDTO;
+import com.telstra.billing_system.exceptions.MailException;
 import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.SubscriptionRepository;
-import com.telstra.billing_system.utils.Mail;
+
+import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +26,7 @@ public class InvoiceService {
     private InvoiceRepository invoiceRepository;
 
     @Autowired
-    public Mail mail;
+    public MailSender mailSender;
 
     @Qualifier("SubscriptionRepository")
     @Autowired
@@ -81,7 +83,16 @@ public class InvoiceService {
         SupplierDTO supplierDTO = new SupplierDTO(invoice.getSupplier());
         InvoiceResponseDTO response = new InvoiceResponseDTO(customerDTO, supplierDTO, invoice.getSubscription(), invoice);
         System.out.println(response.toString());
-        System.out.println(mail.sendMail(response.getCustomerDTO().getCustEmail(),response.toString(),"invoice from telstra"));
+        try {
+            mailSender.sendEmail(response.getCustomerDTO().getCustEmail(), "invoice from telstra", response.toString());
+        } catch (MailException e) {
+            // Log the error or handle it as needed
+            System.err.println("Error sending email: " + e.getMessage());
+        }
+        catch (MessagingException e) {
+            // Log the error or handle it as needed
+            System.err.println("Error sending email: " + e.getMessage());
+        }
         return response;
         
     }
