@@ -10,11 +10,13 @@ public class CustomerDTO {
     private String name;
     private String custEmail;
     private String custPhoneNo;
+    private Integer supplierId;
     public CustomerDTO(Customer customer){
         this.id=customer.getId();
         this.name=customer.getUser().getName();
         this.custEmail=customer.getCustEmail();
         this.custPhoneNo=customer.getCustPhoneNo();
+        this.supplierId=customer.getSupplier().getId();
     }
     
 }

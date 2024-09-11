@@ -50,15 +50,18 @@ public class CustomerController {
     @GetMapping("/details-from-token")
     public ResponseEntity<CustomerDTO> getCustomerFromToken() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    System.out.println("principal "+principal);
     String username;
     if (principal instanceof UserDetails) {
         username = ((UserDetails) principal).getUsername();
     } else {
         username = principal.toString();
     }
+    System.out.println(username);
  
     if (username == null || username.isEmpty()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     CustomerDTO resp = service.getCustomerFromName(username);
+    System.out.println(resp);
     if (resp == null) {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }

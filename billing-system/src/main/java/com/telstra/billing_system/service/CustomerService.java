@@ -61,7 +61,7 @@ public class CustomerService {
     }
     public CustomerDTO getCustomerFromName(String name){
         try {
-            System.out.println("hiii");
+            System.out.println("service "+name);
             Customer response = customerRepo.findByName(name);
             System.out.println(response);
             if(response==null) return null;
