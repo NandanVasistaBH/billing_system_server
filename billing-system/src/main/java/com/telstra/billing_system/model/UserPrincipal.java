@@ -1,32 +1,34 @@
 package com.telstra.billing_system.model;
+
 import java.util.Collection;
 import java.util.Collections;
-import com.telstra.billing_system.model.Customer;
+import com.telstra.billing_system.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class CustomerPrincipal  implements UserDetails {
+public class UserPrincipal implements UserDetails {
 
-    private final Customer customer;
+    private final User user;
 
-    public CustomerPrincipal(Customer customer) {
-        this.customer = customer;
+    public UserPrincipal(User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("CUSTOMER")); 
+        // Assuming a role can be fetched from the User entity
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole())); // Adjust as needed
     }
 
     @Override
     public String getPassword() {
-        return customer.getCustPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return customer.getName();
+        return user.getName();
     }
 
     @Override

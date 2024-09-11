@@ -8,7 +8,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: '*/stable']],
                     userRemoteConfigs: [[url: 'https://github.com/NandanVasistaBH/billing_system_server.git']]
                 ])
             }
@@ -22,23 +22,50 @@ pipeline {
                 '''
             }
         }
-        stage("Pull an image to check if docker exists"){
-            steps{
+        stage("Pull Docker Image") {
+            steps {
                 bat "docker pull alpine"
             }
         }
-        stage("Build Docker image") {
+        stage("Build Docker Image") {
             steps {
                 script {
-                    try{
+                    try {
                         bat "docker rmi -f billing-system"
-                        echo "REMOVED existing docker image and building a new one"
-                    }
-                    catch(Exception e){
-                        echo "Exception occurred "+e.toString()
+                        bat "docker rm -f mysql-container"
+                        bat "docker rm -f billing-system"
+                        echo "Removed existing Docker image and building a new one and deleting the container of mysql"
+                    } catch(Exception e) {
+                        echo "Exception occurred: " + e.toString()
                     }
                     bat "cd billing-system && docker build -t billing-system ."
                 }
+            }
+        }
+        stage("Create Docker Network") {
+            steps {
+                script {
+                    try {
+                        bat "docker network create my-network"
+                    } catch(Exception e) {
+                        echo "Exception occurred: " + e.toString()
+                    }
+                }
+                
+            }
+        }
+        stage("Run MySQL Container") {
+            steps {
+                bat '''
+                docker run -d --name mysql-container --network my-network -p 3307:3306 -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=Nand@39325 -e MYSQL_DATABASE=billing_system mysql:latest
+                '''
+            }
+        }
+        stage("Run Spring Boot Container") {
+            steps {
+                bat '''
+                docker run -d --name billing-system --network my-network -p 8081:8080 billing-system
+                '''
             }
         }
     }

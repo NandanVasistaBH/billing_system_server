@@ -1,6 +1,7 @@
 package com.telstra.billing_system.service;
 
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.Date;
@@ -14,7 +15,8 @@ import java.util.HashMap;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = "vTQ6Usc4uKsmOhd2ZYQ9vD/qg6QjpK5y4/g2ZrW80EY=";
+    @Value("${jwt.secret.key}")
+    private String SECRET_KEY;
     
     public String generateToken(String username){
         Map<String,Object> claims= new HashMap<>();
@@ -23,15 +25,16 @@ public class JwtService {
                     .add(claims)
                     .subject(username)
                     .issuedAt(new Date(System.currentTimeMillis()))
-                    .expiration(new Date(System.currentTimeMillis()+60*60*60)) // 1hr
+                    .expiration(new Date(System.currentTimeMillis()+24 * 60 * 60 * 1000)) // 24 hours
                     .and()
                     .signWith(getKey())
                     .compact();
     }
-    private SecretKey getKey() {
+    SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    
 
     public String extractUsername(String token) {
         return extractClaim(token,Claims::getSubject);
@@ -48,12 +51,13 @@ public class JwtService {
         return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
     }
     
-    private boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token){
         return extractExpirationDate(token).before(new Date());
     }
     private Date extractExpirationDate(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+    
 
    
 }

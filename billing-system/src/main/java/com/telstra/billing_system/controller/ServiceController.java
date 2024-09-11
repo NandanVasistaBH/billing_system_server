@@ -12,15 +12,5 @@ import com.telstra.billing_system.model.Supplier;
 
 @RestController
 public class ServiceController {
-
-    public Object register(Customer customer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'register'");
-    }
-
-    public Object register(Supplier supplier) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'register'");
-    }
     
 }

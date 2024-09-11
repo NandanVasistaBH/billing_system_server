@@ -1,18 +1,35 @@
 package com.telstra.billing_system.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.telstra.billing_system.dto.SupplierDTO;
+import com.telstra.billing_system.dto.CustomerDTO;
+import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.model.Supplier;
-import com.telstra.billing_system.repository.SupplierRepo;
-
-@Service
+import com.telstra.billing_system.repository.CustomerRepository;
+import com.telstra.billing_system.repository.SupplierRepository;
+import com.telstra.billing_system.repository.UserRepository;
+import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
+@Service("SupplierService")
 public class SupplierService {
+    @Qualifier("UserRepository")
     @Autowired
-    public SupplierRepo supplierRepo;
+    private UserRepository userRepo;
+
+    @Qualifier("SupplierRepository")
+    @Autowired
+    private SupplierRepository supplierRepo;
+
+    @Qualifier("CustomerRepository")
+    @Autowired
+    private CustomerRepository customerRepo;
     
     @Autowired
     public AuthenticationManager authenticationManager;
@@ -22,33 +39,67 @@ public class SupplierService {
     
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
-	public String register(Supplier supplier) {
-        try {
-            supplier.setBranchPassword(encoder.encode(supplier.getBranchPassword()));
+    public String register(Supplier supplier) {
+        System.out.println(supplier);
+        try{
+            supplier.getUser().setPassword(encoder.encode(supplier.getUser().getPassword()));
+            userRepo.save(supplier.getUser());
             supplierRepo.save(supplier);
-            return jwtService.generateToken(supplier.getName());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-           return "failure";
+            return jwtService.generateToken(supplier.getUser().getName());
         }
-    }
-
+        catch(Exception e){
+            return e.getMessage();
+        }
+    }  
+    
     public String verify(Supplier supplier) {
-        System.out.println("verify service");
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(supplier.getName(), supplier.getBranchPassword())
+                new UsernamePasswordAuthenticationToken(supplier.getUser().getName(), supplier.getUser().getPassword())
             );
-            System.out.println("auth");
             if (authentication.isAuthenticated()) {
-                return jwtService.generateToken(supplier.getName());
+                return jwtService.generateToken(supplier.getUser().getName());
             }
-            return "success";
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return "failure";
+    }
+    public List<CustomerDTO> listOfCustomerOfASupplier(Integer supplierId){
+        try {
+            Optional<List<Customer>> resp = customerRepo.findBySupplierId(supplierId);
+            if(resp.isEmpty()) return null;
+            List<CustomerDTO> list = new ArrayList<>();
+            for(Customer cust: resp.get()) list.add(new CustomerDTO(cust));
+            return list;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return "failure";
-
+            return null;
         }
     }
-    
+    public SupplierDTO getSupplierFromName(String name){
+        try {
+            Supplier response = supplierRepo.findByName(name);
+            System.out.println(response);
+            if(response==null) return null;
+            return new SupplierDTO(response);
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+           return null;
+        }
+    }
+    public List<SupplierDTO> getAllSuppliers(){
+        try {
+            List<Supplier> response = supplierRepo.findAll();
+            if(response.isEmpty() ) return null;
+            List<SupplierDTO> list=new ArrayList<>();
+            for(Supplier supplier:response){
+                list.add(new SupplierDTO(supplier));
+            }
+            return list;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 }

@@ -1,57 +1,68 @@
 package com.telstra.billing_system.model;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "invoice")
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "Invoice")
 public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Invoice_id")
-    private Integer invoiceId;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "cust_id")
+    @JoinColumn(name = "customer_id", foreignKey = @ForeignKey(name = "fk_customer"), nullable = false)
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "branch_id")
+    @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(name = "fk_supplier"), nullable = false)
     private Supplier supplier;
 
     @ManyToOne
-    @JoinColumn(name = "subscription_id")
+    @JoinColumn(name = "subscription_id", foreignKey = @ForeignKey(name = "fk_subscription"), nullable = false)
     private Subscription subscription;
 
-    @ManyToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private Double amountPaid;
 
-    @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)
-    private BigDecimal amountPaid;
+    @Column(nullable = false)
+    private Double tax;
 
-    @Column(name = "amount_due", nullable = false, precision = 10, scale = 2)
-    private BigDecimal amountDue;
-
-    @Column(name = "tax", nullable = false, precision = 10, scale = 2)
-    private BigDecimal tax;
-
-    @Column(name = "invoice_issue_date", nullable = false)
+    @Column(name = "invoice_issue_date", nullable = false, updatable = false)
     private LocalDate invoiceIssueDate;
 
-    @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
+    @Column(name = "last_updated_at", nullable = false, updatable = false)
+    private LocalDateTime lastUpdatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "payment_id", foreignKey = @ForeignKey(name = "fk_payment"),nullable = true)
+    private Payment payment;
+
+    @PrePersist
+    protected void onCreate() {
+        if (invoiceIssueDate == null) {
+            invoiceIssueDate = LocalDate.now();
+        }
+        lastUpdatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastUpdatedAt = LocalDateTime.now();
+    }
 }
