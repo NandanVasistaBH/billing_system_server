@@ -7,12 +7,14 @@ import lombok.Data;
 @Data
 public class SupplierDTO {
     private String name,branchLoc,branchManager,branchEmail,branchPhoneNo;
+    private Integer id;
     public SupplierDTO(Supplier supplier){
         this.name=supplier.getUser().getName();
         this.branchLoc=supplier.getBranchLoc();
         this.branchEmail=supplier.getBranchEmail();
         this.branchManager=supplier.getBranchManager();
         this.branchPhoneNo=supplier.getBranchPhoneNo();
+        this.id=supplier.getId();
     }
 
 }
