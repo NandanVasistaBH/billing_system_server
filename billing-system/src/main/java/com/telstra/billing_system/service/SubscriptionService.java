@@ -2,10 +2,12 @@ package com.telstra.billing_system.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import com.telstra.billing_system.model.Subscription;
+import com.telstra.billing_system.model.User;
 import com.telstra.billing_system.repository.SubscriptionRepository;
+import com.telstra.billing_system.repository.UserRepository;
 import com.telstra.billing_system.utils.ExtractJwtToken;
 
 @Service("SubscriptionService")
@@ -17,16 +19,19 @@ public class SubscriptionService {
     @Autowired
     private JwtService jwtService;
 
-    private static final String ADMIN = "admin";
+    @Qualifier("UserRepository")
+    @Autowired
+    private UserRepository userRepository;
+
+    private static final String ADMIN_ROLE = "ADMIN";
     public boolean create(Subscription subscription, String authorizationHeader) {
         try {
              String token = ExtractJwtToken.extractToken(authorizationHeader);
-             System.out.println(token);
              if(jwtService.isTokenExpired(token)){
                  return false;
              }
-             System.out.println("token not expired");
-             if(!jwtService.extractUsername(token).equals(ADMIN)){
+             User user =  userRepository.findByName(jwtService.extractUsername(token));
+             if(user==null || !user.getRole().equals(ADMIN_ROLE)){
                  return false;
              }
              subscription.setStatus(Subscription.SubscriptionStatus.PENDING_FOR_APPROVAL_LIVE);
@@ -58,10 +63,10 @@ public class SubscriptionService {
             if (jwtService.isTokenExpired(token)) {
                 return false;
             }
-            System.out.println(jwtService.extractUsername(token));
-            if (!jwtService.extractUsername(token).equals(ADMIN)) {
-                return false;
-            }
+            User user =  userRepository.findByName(jwtService.extractUsername(token));
+            if(user==null || !user.getRole().equals(ADMIN_ROLE)){
+                 return false;
+             }
             Optional<Subscription> subscription = subscriptionRepo.findById(id);
             System.out.println("delete this sub"+subscription);
             if (subscription.isPresent()) {
