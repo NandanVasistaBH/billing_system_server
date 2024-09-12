@@ -20,6 +20,12 @@ public class Subscription {
         POSTPAID,
         PREPAID
     }
+    public enum SubscriptionStatus{
+        LIVE,
+        PENDING_FOR_APPROVAL_LIVE,
+        PENDING_FOR_APPROVAL_CLOSED,
+        CLOSED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +43,7 @@ public class Subscription {
 
     @Column(nullable = false)
     private Integer noOfDays;
+
+    @Column(nullable=false)
+    private SubscriptionStatus status;
 }
