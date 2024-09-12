@@ -20,6 +20,14 @@ public class AdminController {
         }
         return new ResponseEntity<>(service.verify(admin),HttpStatus.OK);
     }
+    @PostMapping("/admin/master-login")
+    public ResponseEntity<String> masterLogin(@RequestBody Admin admin){
+        System.out.println("hiiuu");
+        if(admin.getUser()==null || admin.getUser().getName()==null || admin.getUser().getPassword()==null || !admin.getUser().getRole().equals("MASTER_ADMIN")){
+            return new ResponseEntity<>("insuffient information provided for customer verification",HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(service.verify(admin),HttpStatus.OK);
+    }
     
     @GetMapping("/admin/hello-world")
     public String helloWorld(){

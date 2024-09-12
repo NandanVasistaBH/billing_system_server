@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.service.InvoiceService;
@@ -64,5 +66,25 @@ public class SubscriptionController {
         List<Subscription> resp =invoiceService.getTopSubscription();
         if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp,HttpStatus.OK);
+    }
+    @PutMapping("/approve-subscription")
+    public ResponseEntity<String> approveSubscription(@RequestParam Integer subscriptionId, @RequestHeader("Authorization") String authorizationHeader){
+        if(subscriptionId==null){
+            return new ResponseEntity<>("Insuffient information provided",HttpStatus.BAD_REQUEST);
+        }
+        boolean result = service.approve(subscriptionId,authorizationHeader);
+
+        if(result)return new ResponseEntity<>("Subscription is now live",HttpStatus.OK);
+        return new ResponseEntity<>("only MASTER_ADMIN can aprove",HttpStatus.UNAUTHORIZED);
+    }
+    @PutMapping("/reject-subscription")
+    public ResponseEntity<String> rejectSubscription(@RequestParam Integer subscriptionId, @RequestHeader("Authorization") String authorizationHeader){
+        if(subscriptionId==null ){
+            return new ResponseEntity<>("Insuffient information provided",HttpStatus.BAD_REQUEST);
+        }
+        boolean result = service.reject(subscriptionId,authorizationHeader);
+
+        if(result)return new ResponseEntity<>("Subscription is rejected",HttpStatus.OK);
+        return new ResponseEntity<>("only MASTER_ADMIN can reject",HttpStatus.UNAUTHORIZED);
     }
 }

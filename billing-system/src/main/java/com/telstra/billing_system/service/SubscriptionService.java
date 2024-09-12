@@ -24,6 +24,7 @@ public class SubscriptionService {
     private UserRepository userRepository;
 
     private static final String ADMIN_ROLE = "ADMIN";
+    private static final String MASTER_ADMIN_ROLE = "MASTER_ADMIN";
     public boolean create(Subscription subscription, String authorizationHeader) {
         try {
              String token = ExtractJwtToken.extractToken(authorizationHeader);
@@ -80,4 +81,47 @@ public class SubscriptionService {
         }
         return false;
     }
+    public boolean approve(Integer subscriptionId, String authorizationHeader) {
+        try {
+             String token = ExtractJwtToken.extractToken(authorizationHeader);
+             if(jwtService.isTokenExpired(token)){
+                 return false;
+             }
+             User user =  userRepository.findByName(jwtService.extractUsername(token));
+             System.out.println("MASTER_ADMIN"+user);
+             if(user==null || !user.getRole().equals(MASTER_ADMIN_ROLE)){
+                 return false;
+             }
+             Optional<Subscription> optional = subscriptionRepo.findById(subscriptionId);
+             if(optional.isEmpty()) return false;
+             Subscription subscription = optional.get();
+             subscription.setStatus(Subscription.SubscriptionStatus.LIVE);
+             subscriptionRepo.save(subscription);
+             return true;
+         } catch (Exception e) {
+             System.out.println(e.getMessage());
+         }
+         return false;
+     }
+     public boolean reject(Integer subscriptionId, String authorizationHeader) {
+        try {
+             String token = ExtractJwtToken.extractToken(authorizationHeader);
+             if(jwtService.isTokenExpired(token)){
+                 return false;
+             }
+             User user =  userRepository.findByName(jwtService.extractUsername(token));
+             if(user==null || !user.getRole().equals(MASTER_ADMIN_ROLE)){
+                 return false;
+             }
+             Optional<Subscription> optional = subscriptionRepo.findById(subscriptionId);
+             if(optional.isEmpty()) return false;
+             Subscription subscription = optional.get();
+             subscription.setStatus(Subscription.SubscriptionStatus.CLOSED);
+             subscriptionRepo.save(subscription);
+             return true;
+         } catch (Exception e) {
+             System.out.println(e.getMessage());
+         }
+         return false;
+     }
 }
