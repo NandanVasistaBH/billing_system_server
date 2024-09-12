@@ -43,8 +43,28 @@ public class SubscriptionService {
          }
          return false;
      }
+     // only those subscription which are are LIVE
     public List<Subscription> getAllSubscriptions() {
         return subscriptionRepo.findByStatus(Subscription.SubscriptionStatus.LIVE);
+    }
+    // MASTER_ADMIN can access all subscription of all status
+    public List<Subscription> getAllSubscriptionsOfAllTypes(String authorizationHeader ){
+        try {
+            String token = ExtractJwtToken.extractToken(authorizationHeader);
+             if(jwtService.isTokenExpired(token)){
+                 return null;
+             }
+             
+             User user =  userRepository.findByName(jwtService.extractUsername(token));
+             if(user==null || !user.getRole().equals(MASTER_ADMIN_ROLE)){
+                 return null;
+             }
+             return subscriptionRepo.findAll();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+        
     }
     public List<Subscription> getAllPostpaidSubscriptions() {
         List<Subscription> postpaidSubscriptions = subscriptionRepo.findByType(Subscription.SubscriptionType.POSTPAID);

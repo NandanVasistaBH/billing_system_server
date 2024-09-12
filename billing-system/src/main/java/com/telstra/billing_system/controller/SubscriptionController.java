@@ -36,12 +36,18 @@ public class SubscriptionController {
         if(result)return new ResponseEntity<>("Created",HttpStatus.OK);
         return new ResponseEntity<>("only ADMIN can create",HttpStatus.UNAUTHORIZED);
     }
-    @GetMapping("/all")
+    @GetMapping("/all") // only subscription which are live
     public ResponseEntity<List<Subscription>> getAllSubscriptions() {
         List<Subscription> subscriptions = service.getAllSubscriptions();
         return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
-
+    @GetMapping("/all-subscription-types")
+    public ResponseEntity<List<Subscription>> getAllSubscriptionOfAllTypes( @RequestHeader("Authorization") String authorizationHeader){
+        if(authorizationHeader==null) return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        List<Subscription> list = service.getAllSubscriptionsOfAllTypes(authorizationHeader);
+        if(list==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(list,HttpStatus.OK);
+    }
     @GetMapping("/postpaid")
     public ResponseEntity<List<Subscription>> getAllPostpaidSubscriptions() {
         List<Subscription> subscriptions = service.getAllPostpaidSubscriptions();
