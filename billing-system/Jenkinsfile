@@ -64,7 +64,7 @@ pipeline {
         stage("Run Spring Boot Container") {
             steps {
                 bat '''
-                docker run -d --name billing-system --network my-network -p 8081:8080 billing-system
+                docker run -d --name billing-system --network my-network -p 8081:10000 billing-system
                 '''
             }
         }
