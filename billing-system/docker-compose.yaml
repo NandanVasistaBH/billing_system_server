@@ -1,0 +1,36 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-man
+    environment:
+      MYSQL_ROOT_PASSWORD: localhost
+      MYSQL_DATABASE: billings
+    ports:
+      - "10000:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  spring-app:
+    image: billing-system
+    container_name: billings-app
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/billings?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: localhost
+    ports:
+      - "8081:10000"
+    networks:
+      - app-network
+    restart: on-failure
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

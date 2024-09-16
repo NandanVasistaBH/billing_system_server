@@ -42,30 +42,35 @@ pipeline {
                 }
             }
         }
-        stage("Create Docker Network") {
-            steps {
-                script {
-                    try {
-                        bat "docker network create my-network"
-                    } catch(Exception e) {
-                        echo "Exception occurred: " + e.toString()
-                    }
-                }
+        // stage("Create Docker Network") {
+        //     steps {
+        //         script {
+        //             try {
+        //                 bat "docker network create my-network"
+        //             } catch(Exception e) {
+        //                 echo "Exception occurred: " + e.toString()
+        //             }
+        //         }
                 
-            }
-        }
-        stage("Run MySQL Container") {
+        //     }
+        // }
+        // stage("Run MySQL Container") {
+        //     steps {
+        //         bat '''
+        //         docker run -d --name mysql-container --network my-network -p 3307:3306 -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=Nand@39325 -e MYSQL_DATABASE=billing_system2 mysql:latest
+        //         '''
+        //     }
+        // }
+        // stage("Run Spring Boot Container") {
+        //     steps {
+        //         bat '''
+        //         docker run -d --name billing-system --network my-network -p 8081:10000 billing-system
+        //         '''
+        //     }
+        // }
+        stage("Docker compose") {
             steps {
-                bat '''
-                docker run -d --name mysql-container --network my-network -p 3307:3306 -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=Nand@39325 -e MYSQL_DATABASE=billing_system2 mysql:latest
-                '''
-            }
-        }
-        stage("Run Spring Boot Container") {
-            steps {
-                bat '''
-                docker run -d --name billing-system --network my-network -p 8081:10000 billing-system
-                '''
+                bat "docker compose up -d"
             }
         }
     }
