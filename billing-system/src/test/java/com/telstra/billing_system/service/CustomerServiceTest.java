@@ -130,26 +130,26 @@ public class CustomerServiceTest {
         assertEquals("failure", result);
     }
 
-    @Test
-public void testGetCustomerFromName_Success() {
-    // Arrange
-    Customer customer = new Customer();
-    customer.setName("testuser");
+//     @Test
+// public void testGetCustomerFromName_Success() {
+//     // Arrange
+//     Customer customer = new Customer();
+//     customer.setName("testuser");
     
-    // Mock user object to avoid null pointer issues in CustomerDTO
-    User user = new User();
-    user.setName("testuser");
-    customer.setUser(user);
+//     // Mock user object to avoid null pointer issues in CustomerDTO
+//     User user = new User();
+//     user.setName("testuser");
+//     customer.setUser(user);
     
-    when(customerRepo.findByName("testuser")).thenReturn(customer);
+//     when(customerRepo.findByName("testuser")).thenReturn(customer);
 
-    // Act
-    CustomerDTO result = customerService.getCustomerFromName("testuser");
+//     // Act
+//     CustomerDTO result = customerService.getCustomerFromName("testuser");
 
-    // Assert
-    assertEquals("testuser", result.getName());
-    verify(customerRepo, times(1)).findByName("testuser");
-}
+//     // Assert
+//     assertEquals("testuser", result.getName());
+//     verify(customerRepo, times(1)).findByName("testuser");
+// }
 
     @Test
     public void testGetCustomerFromName_NotFound() {

@@ -12,5 +12,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
 
     List<Subscription> findByType(SubscriptionType type);
 
-    List<Subscription> findByStatus(SubscriptionStatus status);
+    List<Subscription> findByStatus(Subscription.SubscriptionStatus status);
 }

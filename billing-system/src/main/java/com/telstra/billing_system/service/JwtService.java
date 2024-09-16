@@ -31,9 +31,13 @@ public class JwtService {
                     .compact();
     }
     SecretKey getKey() {
+        if (SECRET_KEY == null || SECRET_KEY.isEmpty()) {
+            SECRET_KEY="vTQ6Usc4uKsmOhd2ZYQ9vD/qg6QjpK5y4/g2ZrW80EY=";
+        }
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    
     
 
     public String extractUsername(String token) {
@@ -47,14 +51,14 @@ public class JwtService {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
-    private Claims extractAllClaims(String token){
+    public Claims extractAllClaims(String token){
         return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
     }
     
     public boolean isTokenExpired(String token){
         return extractExpirationDate(token).before(new Date());
     }
-    private Date extractExpirationDate(String token) {
+    public Date extractExpirationDate(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
     

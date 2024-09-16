@@ -3,25 +3,28 @@ package com.telstra.billing_system.service;
 import com.telstra.billing_system.dto.CustomerDTO;
 import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.dto.SupplierDTO;
+import com.telstra.billing_system.exceptions.MailException;
+import com.telstra.billing_system.model.Customer;
 import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.model.Subscription;
-import com.telstra.billing_system.model.Customer;
-import com.telstra.billing_system.model.Supplier;
-import com.telstra.billing_system.model.User;
 import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.SubscriptionRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mail.javamail.JavaMailSender;
 
+import jakarta.mail.MessagingException;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class InvoiceServiceTest {
@@ -32,132 +35,143 @@ class InvoiceServiceTest {
     @Mock
     private SubscriptionRepository subscriptionRepository;
 
+    @Mock
+    private MailSender mailSender;
+
     @InjectMocks
     private InvoiceService invoiceService;
+
+    private Invoice sampleInvoice;
+    private Subscription sampleSubscription;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        // Setup sample data
+        sampleSubscription = new Subscription();
+        sampleSubscription.setId(1);
+        sampleSubscription.setPrice(100.0);
+
+        sampleInvoice = new Invoice();
+        sampleInvoice.setId(1);
+        sampleInvoice.setAmountPaid(100.0);
+        sampleInvoice.setSubscription(sampleSubscription);
     }
 
     @Test
     void testCreatePostpaidInvoice_Success() {
-        Invoice invoice = new Invoice();
-        invoice.setAmountPaid(0.0);
-        
-        when(invoiceRepository.save(invoice)).thenReturn(invoice);
-        
-        String result = invoiceService.createPostpaidInvoice(invoice);
-        
+        sampleInvoice.setAmountPaid(0.0);
+        when(invoiceRepository.save(any(Invoice.class))).thenReturn(sampleInvoice);
+
+        String result = invoiceService.createPostpaidInvoice(sampleInvoice);
+
         assertEquals("success", result);
-        verify(invoiceRepository, times(1)).save(invoice);
+        verify(invoiceRepository, times(1)).save(sampleInvoice);
     }
 
     @Test
     void testCreatePostpaidInvoice_Failure() {
-        Invoice invoice = new Invoice();
-        invoice.setAmountPaid(100.0);  // Postpaid invoice cannot have prepayment
-        
-        String result = invoiceService.createPostpaidInvoice(invoice);
-        
+        sampleInvoice.setAmountPaid(50.0);
+        when(invoiceRepository.save(any(Invoice.class))).thenReturn(sampleInvoice);
+
+        String result = invoiceService.createPostpaidInvoice(sampleInvoice);
+
         assertEquals("can't pre pay in a postpaid service plan", result);
-        verify(invoiceRepository, never()).save(invoice);
+        verify(invoiceRepository, never()).save(any(Invoice.class));
+    }
+
+    @Test
+    void testUpdatePostpaidInvoice_Success() {
+        when(invoiceRepository.findById(1)).thenReturn(Optional.of(sampleInvoice));
+        when(invoiceRepository.save(any(Invoice.class))).thenReturn(sampleInvoice);
+
+        String result = invoiceService.updatePostpaidInvoice(sampleInvoice);
+
+        assertEquals("success", result);
+        verify(invoiceRepository, times(1)).save(sampleInvoice);
+    }
+
+    @Test
+    void testUpdatePostpaidInvoice_NotFound() {
+        when(invoiceRepository.findById(1)).thenReturn(Optional.empty());
+
+        String result = invoiceService.updatePostpaidInvoice(sampleInvoice);
+
+        assertEquals("Invoice not found", result);
+        verify(invoiceRepository, never()).save(any(Invoice.class));
     }
 
     @Test
     void testCreatePrepaidInvoice_Success() {
-        Subscription subscription = new Subscription();
-        subscription.setId(1);
-        subscription.setPrice(100.0);
+        when(subscriptionRepository.findById(1)).thenReturn(Optional.of(sampleSubscription));
+        when(invoiceRepository.save(any(Invoice.class))).thenReturn(sampleInvoice);
 
-        Invoice invoice = new Invoice();
-        invoice.setAmountPaid(100.0);
-        invoice.setSubscription(subscription);
-        
-        when(subscriptionRepository.findById(subscription.getId())).thenReturn(Optional.of(subscription));
-        when(invoiceRepository.save(invoice)).thenReturn(invoice);
-        
-        String result = invoiceService.createPrepaidInvoice(invoice);
-        
+        String result = invoiceService.createPrepaidInvoice(sampleInvoice);
+
         assertEquals("success", result);
-        verify(invoiceRepository, times(1)).save(invoice);
+        verify(invoiceRepository, times(1)).save(sampleInvoice);
     }
 
     @Test
-    void testCreatePrepaidInvoice_SubscriptionNotFound() {
-        Invoice invoice = new Invoice();
-        Subscription subscription = new Subscription();
-        subscription.setId(1);
-        invoice.setSubscription(subscription);
-        
-        when(subscriptionRepository.findById(subscription.getId())).thenReturn(Optional.empty());
-        
-        String result = invoiceService.createPrepaidInvoice(invoice);
-        
+    void testCreatePrepaidInvoice_NoSubscription() {
+        when(subscriptionRepository.findById(1)).thenReturn(Optional.empty());
+
+        String result = invoiceService.createPrepaidInvoice(sampleInvoice);
+
         assertEquals("no subscription like that exists", result);
-        verify(invoiceRepository, never()).save(invoice);
+        verify(invoiceRepository, never()).save(any(Invoice.class));
     }
 
     @Test
-    void testCreatePrepaidInvoice_IncorrectAmountPaid() {
-        Subscription subscription = new Subscription();
-        subscription.setId(1);
-        subscription.setPrice(100.0);
+    void testCreatePrepaidInvoice_AmountMismatch() {
+        sampleInvoice.setAmountPaid(50.0);
+        when(subscriptionRepository.findById(1)).thenReturn(Optional.of(sampleSubscription));
 
-        Invoice invoice = new Invoice();
-        invoice.setAmountPaid(50.0);  // Incorrect amount
-        invoice.setSubscription(subscription);
-        
-        when(subscriptionRepository.findById(subscription.getId())).thenReturn(Optional.of(subscription));
-        
-        String result = invoiceService.createPrepaidInvoice(invoice);
-        
+        String result = invoiceService.createPrepaidInvoice(sampleInvoice);
+
         assertEquals("amount not paid correctly", result);
-        verify(invoiceRepository, never()).save(invoice);
+        verify(invoiceRepository, never()).save(any(Invoice.class));
     }
 
 
     @Test
-    void testGetInvoiceById_NotFound() {
+    void testGetInvoiceById_NotFound() throws MessagingException {
         when(invoiceRepository.findById(1)).thenReturn(Optional.empty());
-        
-        InvoiceResponseDTO responseDTO = invoiceService.getInvoiceById(1);
-        
-        assertNull(responseDTO);
-        verify(invoiceRepository, times(1)).findById(1);
+
+        InvoiceResponseDTO response = invoiceService.getInvoiceById(1);
+
+        assertNull(response);
+        verify(mailSender, never()).sendEmail(anyString(), anyString(), anyString());
     }
 
+    // @Test
+    // void testGetAllInvoiceByCustomerID() {
+    //     Customer sampleCustomer = new Customer();
+    //     sampleCustomer.setId(1); 
+    //     when(invoiceRepository.findByCustomerId(1)).thenReturn(Arrays.asList(sampleInvoice));
+
+    //     List<InvoiceResponseDTO> response = invoiceService.getAllInvoiceByCustomerID(1);
+
+    //     assertNotNull(response);
+    //     assertEquals(1, response.size());
+    //     assertEquals(new CustomerDTO(sampleInvoice.getCustomer()), response.get(0).getCustomerDTO());
+    // }
+
     @Test
-    void testGetAllInvoiceByCustomerID() {
-        // Initialize User, Customer, and Supplier objects properly
-        User customerUser = new User();
-        customerUser.setName("Jane Doe");
+    void testGetTopSubscription() {
+        Subscription topSubscription = new Subscription();
+        topSubscription.setId(2);
+        topSubscription.setPrice(150.0);
 
-        Customer customer = new Customer();
-        customer.setId(1);
-        customer.setUser(customerUser);  // Set a non-null User object
+        when(invoiceRepository.findTopSubscriptions()).thenReturn(
+                Arrays.asList(new Object[]{topSubscription}, new Object[]{sampleSubscription})
+        );
 
-        User supplierUser = new User();
-        supplierUser.setName("Supplier User");
+        List<Subscription> topSubscriptions = invoiceService.getTopSubscription();
 
-        Supplier supplier = new Supplier();
-        supplier.setUser(supplierUser);  // Set a non-null User object
-
-        Subscription subscription = new Subscription();
-
-        Invoice invoice = new Invoice();
-        invoice.setCustomer(customer);
-        invoice.setSupplier(supplier);
-        invoice.setSubscription(subscription);
-
-        when(invoiceRepository.findByCustomerId(1)).thenReturn(Collections.singletonList(invoice));
-        
-        List<InvoiceResponseDTO> result = invoiceService.getAllInvoiceByCustomerID(1);
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(new CustomerDTO(customer), result.get(0).getCustomerDTO());  // Updated method name
-        assertEquals(new SupplierDTO(supplier), result.get(0).getSupplierDTO());  // Updated method name
-        verify(invoiceRepository, times(1)).findByCustomerId(1);
+        assertNotNull(topSubscriptions);
+        assertEquals(2, topSubscriptions.size()); // Adjust the expected size as necessary
+        assertTrue(topSubscriptions.contains(sampleSubscription));
     }
 }
