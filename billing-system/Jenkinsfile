@@ -70,7 +70,7 @@ pipeline {
         // }
         stage("Docker compose") {
             steps {
-                bat "docker compose up -d"
+                bat "cd billing-system && docker compose up -d"
             }
         }
     }

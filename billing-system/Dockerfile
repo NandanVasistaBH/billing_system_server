@@ -1,3 +1,9 @@
 FROM openjdk:8
-COPY target/billing-*.jar /billing-system.jar
-CMD ["java","-cp", "/billing-system.jar", "com.telstra.assignment.billing_system.BillingSystemApplication"]
+
+WORKDIR /app
+
+COPY target/billing-*.jar /app/billing-system.jar
+
+EXPOSE 10000
+
+ENTRYPOINT ["java","-jar", "/app/billing-system.jar"]

@@ -1,12 +1,12 @@
 services:
   mysql-db:
     image: mysql:8.0
-    container_name: mysql-man
+    container_name: mysql-docker
     environment:
-      MYSQL_ROOT_PASSWORD: localhost
-      MYSQL_DATABASE: billings
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: billing_system2
     ports:
-      - "10000:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -18,11 +18,11 @@ services:
     depends_on:
       - mysql-db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/billings?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/billing_system2?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: localhost
+      SPRING_DATASOURCE_PASSWORD: root
     ports:
-      - "8081:10000"
+      - "8022:10000"
     networks:
       - app-network
     restart: on-failure
