@@ -30,6 +30,11 @@ public class AdminService {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(admin.getUser().getName(), admin.getUser().getPassword())
             );
+            System.out.println(admin.getUser().getName());
+            if(!admin.getUser().getName().equals("adminmaster")){
+                // HARDCODED
+                return "only adminmaster can login";
+            }
             if (authentication.isAuthenticated()) {
                 return jwtService.generateToken(admin.getUser().getName());
             }
