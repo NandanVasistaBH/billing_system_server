@@ -50,7 +50,7 @@ class SupplierServiceTest {
         user.setName("supplier1");
         user.setPassword("password123");
         supplier.setUser(user);
-
+        supplier.setName("supplier1");
         when(userRepo.save(any(User.class))).thenReturn(user);
         when(supplierRepo.save(any(Supplier.class))).thenReturn(supplier);
         when(jwtService.generateToken(user.getName())).thenReturn("mockToken");
