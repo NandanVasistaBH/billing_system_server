@@ -76,18 +76,21 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    bat 'cd billing_system && kubectl apply -f mysql-deployment.yaml'
-                    bat 'cd billing_system && kubectl apply -f spring-app-deployment.yaml'
-                    bat 'cd billing_system && kubectl apply -f hpa.yaml'
+                    bat '''
+                    cd billing-system 
+                    kubectl apply -f mysql-deployment.yaml
+                    kubectl apply -f spring-app-deployment.yaml
+                    kubectl apply -f hpa.yaml
+                    '''
                 }
             }
         }
         stage('Verify') {
             steps {
                 script {
-                    sh 'kubectl get deployments'
-                    sh 'kubectl get services'
-                    sh 'kubectl get hpa'
+                    bat 'kubectl get deployments'
+                    bat 'kubectl get services'
+                    bat 'kubectl get hpa'
                 }
             }
         }
