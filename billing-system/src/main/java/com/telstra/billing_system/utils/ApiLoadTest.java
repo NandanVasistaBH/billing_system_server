@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ApiLoadTest {
-    private static final String URL = "http://localhost:10000/subscriptions/prepaid";
+    private static final String URL = "http://localhost:9999/subscriptions/prepaid";
     private static final int NUM_THREADS = 10; // Number of concurrent threads
     private static final int REQUESTS_PER_THREAD = 10000;
     public static void main(String[] args) {

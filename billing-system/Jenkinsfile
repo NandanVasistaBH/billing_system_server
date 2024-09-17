@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        bat "docker rmi -f billing-system"
+                        bat "docker rmi -f mrudulaa94/billing_server_repo"
                         bat "docker rm -f mysql-container"
                         bat "docker rm -f billing-system"
                         echo "Removed existing Docker image and building a new one and deleting the container of mysql"

@@ -30,8 +30,11 @@ kind: Service
 metadata:
   name: spring-app
 spec:
+  type: NodePort
   ports:
-  - port: 9999            
-    targetPort: 10000    
+  - port: 10000
+    targetPort: 10000
+    nodePort: 9999 
   selector:
     app: spring-app
+
