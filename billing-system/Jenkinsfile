@@ -23,11 +23,6 @@ pipeline {
                 '''
             }
         }
-        stage("Pull Docker Image") {
-            steps {
-                bat "docker pull alpine"
-            }
-        }
         stage("Build Docker Image") {
             steps {
                 script {
@@ -77,8 +72,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Switch to the appropriate Kubernetes context
                     bat '''
+                    cd billing-system
                     kubectl config use-context docker-desktop
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
