@@ -18,7 +18,7 @@ public class AdminController {
         if(admin.getUser()==null || admin.getUser().getName()==null || admin.getUser().getPassword()==null || !admin.getUser().getRole().equals("ADMIN")){
             return new ResponseEntity<>("insuffient information provided for customer verification",HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(service.verify(admin),HttpStatus.OK);
+        return new ResponseEntity<>(service.verifyAdmin(admin),HttpStatus.OK);
     }
     @PostMapping("/admin/master-login")
     public ResponseEntity<String> masterLogin(@RequestBody Admin admin){
@@ -26,7 +26,7 @@ public class AdminController {
         if(admin.getUser()==null || admin.getUser().getName()==null || admin.getUser().getPassword()==null || !admin.getUser().getRole().equals("MASTER_ADMIN")){
             return new ResponseEntity<>("insuffient information provided for customer verification",HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(service.verify(admin),HttpStatus.OK);
+        return new ResponseEntity<>(service.verifyMasterAdmin(admin),HttpStatus.OK);
     }
     
     @GetMapping("/admin/hello-world")

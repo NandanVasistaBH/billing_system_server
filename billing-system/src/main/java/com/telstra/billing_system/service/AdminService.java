@@ -25,13 +25,13 @@ public class AdminService {
     @Autowired
     public JwtService jwtService;
 
-    public String verify(Admin admin) {
+    public String verifyMasterAdmin(Admin admin) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(admin.getUser().getName(), admin.getUser().getPassword())
             );
             System.out.println(admin.getUser().getName());
-            if(!admin.getUser().getName().equals("adminmaster")){
+            if(!admin.getUser().getRole().equals("MASTER_ADMIN")){
                 // HARDCODED
                 return "only adminmaster can login";
             }
@@ -41,7 +41,24 @@ public class AdminService {
         } catch (Exception e) {
             e.printStackTrace(); 
         }
-        return "failure";
+        return null;
     }
-    
+    public String verifyAdmin(Admin admin) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(admin.getUser().getName(), admin.getUser().getPassword())
+            );
+            System.out.println(admin.getUser().getName());
+            if(!admin.getUser().getRole().equals("ADMIN")){
+                // HARDCODED
+                return "only admin can login";
+            }
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(admin.getUser().getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return null;    
+    }
 }
