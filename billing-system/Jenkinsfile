@@ -76,7 +76,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    bat '''
+                    powershell '''
                     cd billing-system 
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
@@ -88,9 +88,9 @@ pipeline {
         stage('Verify') {
             steps {
                 script {
-                    bat 'kubectl get deployments'
-                    bat 'kubectl get services'
-                    bat 'kubectl get hpa'
+                    powershell 'kubectl get deployments'
+                    powershell 'kubectl get services'
+                    powershell 'kubectl get hpa'
                 }
             }
         }
