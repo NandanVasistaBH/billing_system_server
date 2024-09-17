@@ -8,6 +8,7 @@ import com.telstra.billing_system.model.Invoice;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.SubscriptionRepository;
+import com.telstra.billing_system.utils.ExtractJwtToken;
 
 import jakarta.mail.MessagingException;
 
@@ -31,6 +32,8 @@ public class InvoiceService {
     @Qualifier("SubscriptionRepository")
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+    @Autowired
+    private JwtService jwtService;
     public String createPostpaidInvoice(Invoice invoice) {
         try {
             if(invoice.getAmountPaid()!=0) return "can't pre pay in a postpaid service plan";
@@ -111,6 +114,14 @@ public class InvoiceService {
                       .limit(NUMBER_OF_TOP_SUBSCRIPTION)
                       .map(result -> (Subscription) result[0])
                       .collect(Collectors.toList());
+    }
+    public Integer getNumberOfActiveSubscribersOfASubscription(Subscription subscription,String authorizationHeader) {
+        String token = ExtractJwtToken.extractToken(authorizationHeader);
+        if(token==null || token.length()==0) return null;
+        String username = jwtService.extractUsername(token);
+        //hardcoded as there is one master admin
+        if(username==null || username.length()==0 || !username.equals("adminmaster")) return null;
+        return invoiceRepository.countActiveSubscribersBySubscriptionId(subscription.getId());
     }
     
 }

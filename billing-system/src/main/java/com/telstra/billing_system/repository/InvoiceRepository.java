@@ -16,4 +16,11 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     "GROUP BY i.subscription " +
     "ORDER BY totalAmount DESC")
     List<Object[]> findTopSubscriptions();
+
+    @Query(value = "SELECT COUNT(i.id) FROM invoice i " +
+                   "JOIN subscription s ON i.subscription_id = s.id " +
+                   "WHERE i.subscription_id = :subscriptionId " +
+                   "AND CURDATE() BETWEEN i.invoice_issue_date AND DATE_ADD(i.invoice_issue_date, INTERVAL s.no_of_days DAY)",
+           nativeQuery = true)
+    Integer countActiveSubscribersBySubscriptionId(@Param("subscriptionId") Integer subscriptionId);
 }

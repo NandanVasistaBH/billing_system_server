@@ -2,6 +2,7 @@ package com.telstra.billing_system.controller;
 
 import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.model.Invoice;
+import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.service.InvoiceService;
 
 import java.util.List;
@@ -58,6 +59,15 @@ public class InvoiceController {
     public ResponseEntity<List<InvoiceResponseDTO>> getAllInvoiceByCustomerId(@PathVariable("id") Integer id) {
         List<InvoiceResponseDTO> resp= invoiceService.getAllInvoiceByCustomerID(id);
         if(resp==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(resp,HttpStatus.OK);
+    }
+    @GetMapping("/number-of-active-subscribers")
+    public ResponseEntity<Integer> getNumberOfActiveSubscribersOfASubscription(@RequestBody Subscription subscription, @RequestHeader("Authorization") String authorizationHeader){
+        if(subscription==null || subscription.getId()==null){
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        }
+        Integer resp = invoiceService.getNumberOfActiveSubscribersOfASubscription(subscription,authorizationHeader);
+        if(resp==null)return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(resp,HttpStatus.OK);
     }
 }
