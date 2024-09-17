@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-app
-        image: billing-system:latest
+        image: mrudulaa94/billing_server_repo
         env:
         - name: SPRING_DATASOURCE_URL
           value: "jdbc:mysql://mysql-db:3306/billing_system2?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true"
