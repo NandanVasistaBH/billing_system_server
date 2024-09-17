@@ -78,6 +78,7 @@ pipeline {
                 script {
                     powershell '''
                     cd billing-system 
+                    minikube start
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
                     kubectl apply -f hpa.yaml
