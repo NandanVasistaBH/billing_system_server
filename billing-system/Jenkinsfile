@@ -4,7 +4,6 @@ pipeline {
         PATH = "C:/Users/e039325/Downloads/apache-maven-3.9.8-bin/apache-maven-3.9.8/bin;${env.PATH}"
         KUBECONFIG = "C:/Users/e039325/.kube/config" // Set the path to kubeconfig
         DOCKER_REGISTRY = "docker.io" 
-        DOCKER_CREDENTIALS_ID = "Tela@39628"
         IMAGE_NAME = "mrudulaa94/billing_server_repo"
     }
     stages {
@@ -45,7 +44,7 @@ pipeline {
             steps {
                 script {
                     bat "docker login -u mrudulaa94 -p Tela@39628"
-                    bat "docker push billing-system"                    
+                    bat "docker push  ${IMAGE_NAME}"                    
                 }
             }
         }
