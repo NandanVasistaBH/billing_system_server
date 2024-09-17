@@ -36,7 +36,7 @@ pipeline {
                     } catch(Exception e) {
                         echo "Exception occurred: " + e.toString()
                     }
-                    bat "cd billing-system && docker build -t billing-system ."
+                    bat "cd billing-system && docker build -t mrudulaa94/billing_server_repo ."
                 }
             }
         }
