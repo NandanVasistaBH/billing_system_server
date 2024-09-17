@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         PATH = "C:/Users/e039325/Downloads/apache-maven-3.9.8-bin/apache-maven-3.9.8/bin;${env.PATH}"
+        KUBECONFIG = "C:/Users/e039325/.kube/config" // Set the path to kubeconfig
     }
     stages {
         stage('Clone') {
@@ -42,6 +43,7 @@ pipeline {
                 }
             }
         }
+        // Uncomment and modify as needed
         // stage("Create Docker Network") {
         //     steps {
         //         script {
@@ -51,7 +53,6 @@ pipeline {
         //                 echo "Exception occurred: " + e.toString()
         //             }
         //         }
-                
         //     }
         // }
         // stage("Run MySQL Container") {
@@ -76,8 +77,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Switch to the appropriate Kubernetes context
                     bat '''
-                    cd billing-system 
                     kubectl config use-context docker-desktop
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
@@ -89,9 +90,12 @@ pipeline {
         stage('Verify') {
             steps {
                 script {
-                    bat 'kubectl get deployments'
-                    bat 'kubectl get services'
-                    bat 'kubectl get hpa'
+                    // Verify deployments, services, and HPA
+                    bat '''
+                    kubectl get deployments
+                    kubectl get services
+                    kubectl get hpa
+                    '''
                 }
             }
         }
