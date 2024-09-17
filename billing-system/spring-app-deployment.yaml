@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-app
-        image: billing-system
+        image: billing-system:latest
         env:
         - name: SPRING_DATASOURCE_URL
           value: "jdbc:mysql://mysql-db:3306/billing_system2?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true"
@@ -23,7 +23,7 @@ spec:
         - name: SPRING_DATASOURCE_PASSWORD
           value: "root"
         ports:
-        - containerPort: 10000
+        - containerPort: 10000  # Port the application listens on inside the container
 ---
 apiVersion: v1
 kind: Service
@@ -31,7 +31,7 @@ metadata:
   name: spring-app
 spec:
   ports:
-  - port: 10000
-    targetPort: 10000
+  - port: 9999            
+    targetPort: 10000    
   selector:
     app: spring-app
