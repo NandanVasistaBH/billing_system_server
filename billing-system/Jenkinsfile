@@ -68,9 +68,27 @@ pipeline {
         //         '''
         //     }
         // }
-        stage("Docker compose") {
+        // stage("Docker compose") {
+        //     steps {
+        //         bat "cd billing-system && docker compose up -d"
+        //     }
+        // }
+        stage('Deploy') {
             steps {
-                bat "cd billing-system && docker compose up -d"
+                script {
+                    bat 'cd billing_system && kubectl apply -f mysql-deployment.yaml'
+                    bat 'cd billing_system && kubectl apply -f spring-app-deployment.yaml'
+                    bat 'cd billing_system && kubectl apply -f hpa.yaml'
+                }
+            }
+        }
+        stage('Verify') {
+            steps {
+                script {
+                    sh 'kubectl get deployments'
+                    sh 'kubectl get services'
+                    sh 'kubectl get hpa'
+                }
             }
         }
     }
