@@ -76,9 +76,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    powershell '''
+                    bat '''
                     cd billing-system 
-                    minikube start
+                    kubectl config use-context docker-desktop
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
                     kubectl apply -f hpa.yaml
@@ -89,9 +89,9 @@ pipeline {
         stage('Verify') {
             steps {
                 script {
-                    powershell 'kubectl get deployments'
-                    powershell 'kubectl get services'
-                    powershell 'kubectl get hpa'
+                    bat 'kubectl get deployments'
+                    bat 'kubectl get services'
+                    bat 'kubectl get hpa'
                 }
             }
         }
