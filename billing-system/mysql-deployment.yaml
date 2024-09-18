@@ -17,7 +17,7 @@ spec:
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "root"
+          value: "Nand@39325"
         - name: MYSQL_DATABASE
           value: "billing_system2"
         ports:
@@ -34,9 +34,10 @@ kind: Service
 metadata:
   name: mysql-db
 spec:
+  type: NodePort 
   ports:
   - port: 3306
     targetPort: 3306
-    nodePort: 3307
+    nodePort: 30002
   selector:
     app: mysql-db
