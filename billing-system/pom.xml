@@ -42,6 +42,11 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<version>8.3.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.300</version>
+		</dependency>
 
 		<dependency>
         	<groupId>com.h2database</groupId>

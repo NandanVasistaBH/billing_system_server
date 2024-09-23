@@ -12,6 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
@@ -26,7 +30,9 @@ import com.telstra.billing_system.dto.SupplierDTO;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.dto.InvoiceResponseDTO;
 import com.telstra.billing_system.service.InvoiceService;
-
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 @Service("PdfService")
 public class PdfService {
 
@@ -34,7 +40,8 @@ public class PdfService {
 
     @Autowired
     private InvoiceService invoiceService; 
-
+    @Autowired
+    private AmazonS3 amazonS3; // Inject the S3 client
     public ByteArrayInputStream createPdf(Integer invoiceId) {
         logger.info("Creating PDF for invoiceId: {}", invoiceId);
         InvoiceResponseDTO invoiceResponse = invoiceService.getInvoiceById(invoiceId);
@@ -119,10 +126,21 @@ public class PdfService {
             document.add(footer);
 
             document.close();
+            uploadToS3(out.toByteArray(), "invoice_" + invoiceId + ".pdf");
         } catch (Exception e) {
             logger.error("Error while creating PDF", e);
         }
 
         return new ByteArrayInputStream(out.toByteArray());
+    }
+    private void uploadToS3(byte[] pdfBytes, String fileName) {
+        try (InputStream inputStream = new ByteArrayInputStream(pdfBytes)) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(pdfBytes.length);
+            amazonS3.putObject(new PutObjectRequest("invoice-telecom-billing", fileName, inputStream, metadata));
+            logger.info("Successfully uploaded PDF to S3: {}", fileName);
+        } catch (IOException e) {
+            logger.error("Error uploading PDF to S3", e);
+        }
     }
 }
