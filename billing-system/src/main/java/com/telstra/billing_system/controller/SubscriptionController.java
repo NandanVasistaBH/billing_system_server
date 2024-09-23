@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.telstra.billing_system.dto.SubscriptionDTO;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.service.InvoiceService;
 import com.telstra.billing_system.service.SubscriptionService;
@@ -42,9 +44,9 @@ public class SubscriptionController {
         return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
     @GetMapping("/all-subscription-types")
-    public ResponseEntity<List<Subscription>> getAllSubscriptionOfAllTypes( @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<List<SubscriptionDTO>> getAllSubscriptionOfAllTypes( @RequestHeader("Authorization") String authorizationHeader){
         if(authorizationHeader==null) return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-        List<Subscription> list = service.getAllSubscriptionsOfAllTypes(authorizationHeader);
+        List<SubscriptionDTO> list = service.getAllSubscriptionsOfAllTypes(authorizationHeader);
         if(list==null) return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list,HttpStatus.OK);
     }

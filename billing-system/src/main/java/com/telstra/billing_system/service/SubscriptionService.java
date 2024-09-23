@@ -1,11 +1,15 @@
 package com.telstra.billing_system.service;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import com.telstra.billing_system.dto.SubscriptionDTO;
 import com.telstra.billing_system.model.Subscription;
 import com.telstra.billing_system.model.User;
+import com.telstra.billing_system.repository.InvoiceRepository;
 import com.telstra.billing_system.repository.SubscriptionRepository;
 import com.telstra.billing_system.repository.UserRepository;
 import com.telstra.billing_system.utils.ExtractJwtToken;
@@ -15,6 +19,9 @@ public class SubscriptionService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepo;
+
+    @Autowired
+    private InvoiceRepository invoiceRepo;
 
     @Autowired
     private JwtService jwtService;
@@ -48,7 +55,7 @@ public class SubscriptionService {
         return subscriptionRepo.findByStatus(Subscription.SubscriptionStatus.LIVE);
     }
     // MASTER_ADMIN can access all subscription of all status
-    public List<Subscription> getAllSubscriptionsOfAllTypes(String authorizationHeader ){
+    public List<SubscriptionDTO> getAllSubscriptionsOfAllTypes(String authorizationHeader ){
         try {
             String token = ExtractJwtToken.extractToken(authorizationHeader);
              if(jwtService.isTokenExpired(token)){
@@ -59,7 +66,13 @@ public class SubscriptionService {
              if(user==null || !user.getRole().equals(MASTER_ADMIN_ROLE)){
                  return null;
              }
-             return subscriptionRepo.findAll();
+             List<Subscription> list= subscriptionRepo.findAll();
+             List<SubscriptionDTO> resp = new ArrayList<>();
+             for(Subscription sub : list){
+                Integer noOfActiveSub = invoiceRepo.countActiveSubscribersBySubscriptionId(sub.getId());
+                resp.add(new SubscriptionDTO(sub, noOfActiveSub));
+             }
+             return resp;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
