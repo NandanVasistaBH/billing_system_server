@@ -88,6 +88,7 @@ pipeline {
                     kubectl apply -f mysql-storage.yaml
                     kubectl apply -f mysql-deployment.yaml
                     kubectl apply -f spring-app-deployment.yaml
+                    kubectl apply -f spring-app-service.yaml
                     kubectl apply -f hpa.yaml
                     '''
                 }
