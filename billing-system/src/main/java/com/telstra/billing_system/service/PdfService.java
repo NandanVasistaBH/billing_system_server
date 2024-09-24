@@ -42,13 +42,13 @@ public class PdfService {
     private InvoiceService invoiceService; 
     @Autowired
     private AmazonS3 amazonS3; // Inject the S3 client
-    public ByteArrayInputStream createPdf(Integer invoiceId) {
+    public String createPdf(Integer invoiceId) {
         logger.info("Creating PDF for invoiceId: {}", invoiceId);
         InvoiceResponseDTO invoiceResponse = invoiceService.getInvoiceById(invoiceId);
 
         if (invoiceResponse == null) {
             logger.error("Invoice not found for id: {}", invoiceId);
-            return new ByteArrayInputStream(null);
+            return null;
         }
 
         CustomerDTO customer = invoiceResponse.getCustomerDTO();
@@ -126,21 +126,23 @@ public class PdfService {
             document.add(footer);
 
             document.close();
-            uploadToS3(out.toByteArray(), "invoice_" + invoiceId + ".pdf");
+            return uploadToS3(out.toByteArray(), "invoice_" + invoiceId + ".pdf");
         } catch (Exception e) {
             logger.error("Error while creating PDF", e);
         }
 
-        return new ByteArrayInputStream(out.toByteArray());
+        return null;
     }
-    private void uploadToS3(byte[] pdfBytes, String fileName) {
+    private String uploadToS3(byte[] pdfBytes, String fileName) {
         try (InputStream inputStream = new ByteArrayInputStream(pdfBytes)) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(pdfBytes.length);
             amazonS3.putObject(new PutObjectRequest("invoice-telecom-billing", fileName, inputStream, metadata));
             logger.info("Successfully uploaded PDF to S3: {}", fileName);
+            return amazonS3.getUrl("invoice-telecom-billing", fileName).toString();
         } catch (IOException e) {
             logger.error("Error uploading PDF to S3", e);
+            return null;
         }
     }
 }
