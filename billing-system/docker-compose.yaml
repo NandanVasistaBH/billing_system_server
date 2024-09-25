@@ -1,34 +1,46 @@
 version: '3.8'
 
 services:
-  mysql-db:
-    image: mysql:8.0
-    container_name: mysql-docker
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: billing_system2
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app-network
+  # mysql-db: now using rds use this if using local mysql instance
+  #   image: mysql:8.0
+  #   container_name: mysql-docker
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: billing_system2
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
+  #   networks:
+  #     - app-network
 
   spring-app:
     image: billing-system
     container_name: billings-app
-    depends_on:
-      - mysql-db
+    # depends_on:
+    #   - mysql-db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/billing_system2?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://database-2.cwbn8lou0jo9.us-east-1.rds.amazonaws.com:3306/billing_system2?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_PASSWORD: pJIaOCd7axjqQs9t
     ports:
-      - "8022:10000"
+      - "10000:10000"
     networks:
       - app-network
     restart: on-failure
 
+   react-application:
+    image: mrudulaa94/billing_system_frontend
+    container_name: billing-react-app
+    depends_on:
+      - spring-app
+    environment:
+      REACT_APP_BACKEND_URL: http://3.88.217.153:10000
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    restart: on-failure
 volumes:
   mysql-data:
     driver: local
