@@ -6,6 +6,7 @@ pipeline {
         DOCKER_REGISTRY = "docker.io" 
         IMAGE_NAME = "mrudulaa94/billing_server_repo"
     }
+
     stages {
         stage('Clone') {
             steps {

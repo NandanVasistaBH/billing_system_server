@@ -15,7 +15,7 @@ services:
   #     - app-network
 
   spring-app:
-    image: mrudulaa94/billing_server_repo
+    image: mrudulaa94/billing_server_repo:v1.1
     container_name: billings-app
     # depends_on:
     #   - mysql-db
@@ -31,7 +31,7 @@ services:
     restart: on-failure
 
   react-application:
-    image: mrudulaa94/billing_system_frontend
+    image: mrudulaa94/billing_system_frontend:latest
     container_name: billing-react-app
     depends_on:
       - spring-app
