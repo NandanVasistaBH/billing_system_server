@@ -43,7 +43,9 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat '''echo "Tela@39628" | docker login -u mrudulaa94 --password-stdin'''
+                    bat '''
+                    echo "Tela@39628" | docker login -u mrudulaa94 --password-stdin
+                    '''
                     bat "docker push  ${IMAGE_NAME}"                    
                 }
             }
