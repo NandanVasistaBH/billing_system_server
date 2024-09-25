@@ -15,7 +15,7 @@ services:
   #     - app-network
 
   spring-app:
-    image: billing-system
+    image: mrudulaa94/billing_server_repo
     container_name: billings-app
     # depends_on:
     #   - mysql-db
@@ -29,21 +29,22 @@ services:
       - app-network
     restart: on-failure
 
-   react-application:
+  react-application:
     image: mrudulaa94/billing_system_frontend
     container_name: billing-react-app
     depends_on:
       - spring-app
     environment:
-      REACT_APP_BACKEND_URL: http://3.88.217.153:10000
+      REACT_APP_BACKEND_URI: http://3.88.217.153:10000
     ports:
       - "3000:3000"
     networks:
       - app-network
     restart: on-failure
-volumes:
-  mysql-data:
-    driver: local
+
+# volumes:
+#   mysql-data:
+#     driver: local
 
 networks:
   app-network:
