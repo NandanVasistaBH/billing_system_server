@@ -10,7 +10,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${react.origin}")
     private String frontendOrigin;
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
