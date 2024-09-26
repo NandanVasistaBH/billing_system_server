@@ -98,17 +98,20 @@ public class SubscriptionService {
                 return false;
             }
             User user =  userRepository.findByName(jwtService.extractUsername(token));
-            if(user==null || !user.getRole().equals(ADMIN_ROLE)){
-                 return false;
-             }
-            Optional<Subscription> subscription = subscriptionRepo.findById(id);
-            System.out.println("delete this sub"+subscription);
-            if (subscription.isPresent()) {
-                Subscription sub = subscription.get();
-                sub.setStatus(Subscription.SubscriptionStatus.PENDING_FOR_APPROVAL_CLOSED);
-                subscriptionRepo.save(sub);
-                return true;
+            System.out.println(user);
+            if(user!=null && (user.getRole().equals(ADMIN_ROLE) || user.getRole().equals(MASTER_ADMIN_ROLE))){
+                Optional<Subscription> subscription = subscriptionRepo.findById(id);
+                System.out.println("delete this sub"+subscription);
+                if (subscription.isPresent()) {
+                    Subscription sub = subscription.get();
+                    if(user.getRole().equals(ADMIN_ROLE)) sub.setStatus(Subscription.SubscriptionStatus.PENDING_FOR_APPROVAL_CLOSED);
+                    else if(user.getRole().equals(MASTER_ADMIN_ROLE)) sub.setStatus(Subscription.SubscriptionStatus.CLOSED);
+                    else return false;
+                    subscriptionRepo.save(sub);
+                    return true;
+                }
             }
+            else return false;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
